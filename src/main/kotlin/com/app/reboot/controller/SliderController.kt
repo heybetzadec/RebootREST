@@ -43,26 +43,6 @@ class SliderController(@Autowired private val sliderRepository : SliderRepositor
             } else {
                 response.status = HttpStatus.OK
                 val content = result.get()
-//                var width = 0
-//                var height = 0
-//                when (type) {
-//                    1 -> {
-//                        width = Final.sliderImageWidth
-//                        height = Final.sliderImageHeigh
-//                    }
-//                    2 -> {
-//                        width = Final.mainTopBottomWidth
-//                        height = Final.mainTopBottomHeigh
-//                    }
-//                    3 -> {
-//                        width = Final.mainRightWidth
-//                        height = Final.mainRightHeigh
-//                    }
-//                    4 -> {
-//                        width = Final.thubnailWidth
-//                        height = Final.thubnailHeigh
-//                    }
-//                }
                 if (!file.name.equals(content.imageName)){
                     storageService.uploadImageSetSize(file, Final.sliderDimension(type).width,Final.sliderDimension(type).height)
                 }
@@ -83,6 +63,27 @@ class SliderController(@Autowired private val sliderRepository : SliderRepositor
         }
         return response
     }
+
+
+    @RequestMapping(value = ["/slider/get/id/{id}"], method = [RequestMethod.GET])
+    @Throws(Exception::class)
+    fun getSlider(@PathVariable id :Long): Response {
+        val response = Response()
+        val result = sliderRepository.findById(id)
+        if (result.isEmpty){
+            val error = Problem(404,"Məlumat yoxdur!","Not found sliders!")
+            response.problem = error
+            response.status = HttpStatus.NOT_ACCEPTABLE
+        } else {
+            val slider = result.get()
+            val body = Body()
+            body.slider = slider
+            response.body = body
+        }
+        response.status = HttpStatus.OK
+        return  response
+    }
+
 
     @RequestMapping(value = ["/slider/get/model/type/{type}/id/{id}"], method = [RequestMethod.GET])
     @Throws(Exception::class)
