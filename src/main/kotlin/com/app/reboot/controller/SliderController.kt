@@ -138,9 +138,32 @@ class SliderController(@Autowired private val sliderRepository : SliderRepositor
         return  response
     }
 
-    @RequestMapping(value = ["/slider/set"], method = [RequestMethod.POST])
+    @RequestMapping(value = ["/slider/add"], method = [RequestMethod.POST])
     @Throws(Exception::class)
-    fun addContent(@RequestBody slider : Slider): Response {
+    fun addSlider(@RequestBody slider : Slider): Response {
+        val response = Response()
+        try {
+            sliderRepository.save(slider)
+            val body = Body()
+            body.slider = slider
+            response.body = body
+            response.status = HttpStatus.OK
+        }catch (e:Exception){
+            val error = Problem(500,"Məzmun saxlanlayarkən problem yarandı!","${e.message}")
+            response.problem = error
+            response.status = HttpStatus.NOT_ACCEPTABLE
+            try {
+                storageService.removeFile(slider.imageName)
+            } catch (e: StorageException){
+                println("problem remove file: ${e.message}")
+            }
+        }
+        return response
+    }
+
+    @RequestMapping(value = ["/slider/edit"], method = [RequestMethod.POST])
+    @Throws(Exception::class)
+    fun editSlider(@RequestBody slider : Slider): Response {
         val response = Response()
         val cb = em.criteriaBuilder
         val cq = cb.createQuery(Slider::class.java)
