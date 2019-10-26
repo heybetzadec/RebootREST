@@ -27,6 +27,9 @@ class Slider: Serializable {
     @Column(name="image_name")
     var imageName: String = ""
 
+    @Transient
+    var oldImageName: String = ""
+
     @OneToOne(fetch = FetchType.LAZY)
 //    @JsonIgnore
     var content: Content? = null

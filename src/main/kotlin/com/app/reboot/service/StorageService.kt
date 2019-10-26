@@ -49,7 +49,7 @@ class StorageService {
         }
         try {
             val fileName = file.originalFilename ?: "img.jpg"
-            val `is` = ByteArrayInputStream(resizeImageToWidth(file.bytes, getFileExtension(file.name), width))
+            val `is` = ByteArrayInputStream(resizeImageToSmall(file.bytes, getFileExtension(file.name), width, height))
             val bufferedImage = ImageIO.read(`is`)
             val resizedBufferedImage = bufferedImage.getSubimage(0, 0, width, height)
             val outputfile = File(path+fileName)
@@ -61,16 +61,23 @@ class StorageService {
     }
 
     fun uploadImageWithThumbnail(file: MultipartFile) {
-        uploadImageSetSize(file, file.name , Final.imageWidth, Final.imageHeigh)
-        uploadImageSetSize(file, "th_${file.name}", Final.thubnailWidth, Final.thubnailHeigh)
+        val fileName = file.originalFilename ?: "img.jpg"
+        uploadImageSetSize(file,  fileName, Final.imageWidth, Final.imageHeigh)
+        uploadImageSetSize(file, "th_${fileName}", Final.thubnailWidth, Final.thubnailHeigh)
     }
 
-    fun resizeImageToWidth(fileData: ByteArray, formatName: String, width:Int): ByteArray {
+    fun resizeImageToSmall(fileData: ByteArray, formatName: String, width:Int, height:Int): ByteArray {
         val `in` = ByteArrayInputStream(fileData)
         try {
             val img = ImageIO.read(`in`)
-            val w = width
-            var h = img.height / (img.width / w)
+            var w = width
+            var h = height
+            if (width>height){
+                h = img.height / (img.width / w)
+            } else {
+                w = img.width / (img.height / h)
+            }
+
             val scaledImage = img.getScaledInstance(w, h, Image.SCALE_SMOOTH)
             val imageBuff = BufferedImage(w, h, BufferedImage.TYPE_INT_RGB)
             imageBuff.graphics.drawImage(scaledImage, 0, 0, Color(0, 0, 0), null)
@@ -89,7 +96,7 @@ class StorageService {
             throw StorageException("Failed to store empty file")
         }
         try {
-            val `is` = ByteArrayInputStream(resizeImageToWidth(file.bytes, getFileExtension(file.name), width))
+            val `is` = ByteArrayInputStream(resizeImageToSmall(file.bytes, getFileExtension(file.name), width, height))
             val bufferedImage = ImageIO.read(`is`)
             val resizedBufferedImage = bufferedImage.getSubimage(0, 0, width, height)
             val outputfile = File(path+fileName)

@@ -35,17 +35,13 @@ class Final {
                                     width = Final.sliderImageWidth
                                     height = Final.sliderImageHeigh
                             }
-                            2 -> {
+                            2, 3 -> {
                                     width = Final.mainTopBottomWidth
                                     height = Final.mainTopBottomHeigh
                             }
-                            3 -> {
-                                    width = Final.mainRightWidth
-                                    height = Final.mainRightHeigh
-                            }
                             4 -> {
-                                    width = Final.thubnailWidth
-                                    height = Final.thubnailHeigh
+                                width = Final.mainRightWidth
+                                height = Final.mainRightHeigh
                             }
                     }
 

@@ -31,8 +31,12 @@ class SliderController(@Autowired private val sliderRepository : SliderRepositor
 
 
 
+//    @RequestMapping(value = ["/slider/upload/img"], method = [RequestMethod.POST], consumes = ["multipart/form-data"])
+//    fun upload(@RequestParam file: MultipartFile, @RequestParam oldImage: String, @RequestParam type: Int, @RequestParam id: Long): Response {
+
     @RequestMapping(value = ["/slider/upload/img"], method = [RequestMethod.POST], consumes = ["multipart/form-data"])
     fun upload(@RequestParam file: MultipartFile, @RequestParam oldImage: String, @RequestParam type: Int, @RequestParam id: Long): Response {
+        println("isledi bura")
         val response = Response()
         try {
             val result =  contentRepository.findById(id)
@@ -44,7 +48,7 @@ class SliderController(@Autowired private val sliderRepository : SliderRepositor
                 response.status = HttpStatus.OK
                 val content = result.get()
                 if (!file.name.equals(content.imageName)){
-                    storageService.uploadImageSetSize(file, Final.sliderDimension(type).width,Final.sliderDimension(type).height)
+                    storageService.uploadImageSetSize(file, file.originalFilename ?: "img.jpg", Final.sliderDimension(type).width,Final.sliderDimension(type).height)
                 }
                 try {
                     if (!oldImage.equals(content.imageName)){
@@ -90,15 +94,35 @@ class SliderController(@Autowired private val sliderRepository : SliderRepositor
     fun getModel(@PathVariable type :Int, @PathVariable id :Long): Response {
         val response = Response()
         val result =  contentRepository.findById(id)
+        var sliderId:Long? = null
+        var oldImageName = ""
         if (result.isEmpty){
             val error = Problem(404,"Məlumat yoxdur!","Not found contents!")
             response.problem = error
             response.status = HttpStatus.NOT_ACCEPTABLE
         } else {
+            // Showcase type is 2,3,4 then find edited type
+            if (arrayOf(2, 3, 4).contains(type)){
+                val cb = em.criteriaBuilder
+                val cq = cb.createQuery(Slider::class.java)
+                val root = cq.from(Slider::class.java)
+                cq.select(root)
+                cq.where(
+                        cb.equal(root.get<Int>("typeId"), type)
+                )
+
+                val query = this.em.createQuery<Slider>(cq)
+                val result = query.resultList
+                if (result.size > 0){
+                    sliderId = result[0].id
+                    oldImageName = result[0].imageName
+                }
+            }
+
             val content = result.get()
             var endIndex = if(content.html.length > 255)  255 else content.html.length
             val des = content.html.substring(0, endIndex).replace("\\<(.*?)\\>".toRegex(), "") + "..."
-            val slider = Slider(null, type, content.title, des,"movzu/$id/ad/${content.link}", content.imageName,0,0, content.createDate, Date(), Date())
+            val slider = Slider(sliderId, type, content.title, des,"movzu/$id/ad/${content.link}", content.imageName,0,0, content.createDate, Date(), Date())
             slider.content = content
             val body = Body()
             body.slider = slider
@@ -138,11 +162,30 @@ class SliderController(@Autowired private val sliderRepository : SliderRepositor
         return  response
     }
 
-    @RequestMapping(value = ["/slider/add"], method = [RequestMethod.POST])
+    @RequestMapping(value = ["/slider/save"], method = [RequestMethod.POST])
     @Throws(Exception::class)
-    fun addSlider(@RequestBody slider : Slider): Response {
+    fun saveSlider(@RequestBody slider : Slider): Response {
         val response = Response()
         try {
+            if (slider.oldImageName != slider.imageName && slider.oldImageName != ""){
+                val cb = em.criteriaBuilder
+                val cq = cb.createQuery(Content::class.java)
+                val root = cq.from(Content::class.java)
+                cq.select(root)
+                cq.where(
+                        cb.equal(root.get<String>("imageName"), slider.oldImageName)
+                )
+                val query = em.createQuery<Content>(cq)
+                val result = query.resultList
+                if (result.size == 0){
+                    try {
+
+                    } catch (e:Exception){
+                        println("Remove file error: ${e.message}")
+                    }
+                    storageService.removeFile(slider.oldImageName)
+                }
+            }
             sliderRepository.save(slider)
             val body = Body()
             body.slider = slider
@@ -160,59 +203,5 @@ class SliderController(@Autowired private val sliderRepository : SliderRepositor
         }
         return response
     }
-
-    @RequestMapping(value = ["/slider/edit"], method = [RequestMethod.POST])
-    @Throws(Exception::class)
-    fun editSlider(@RequestBody slider : Slider): Response {
-        val response = Response()
-        val cb = em.criteriaBuilder
-        val cq = cb.createQuery(Slider::class.java)
-        val root = cq.from(Slider::class.java)
-        cq.select(root)
-        cq.where(
-                cb.equal(root.get<Int>("typeId"), slider.typeId)
-        )
-        val query = em.createQuery<Slider>(cq)
-        try {
-            when (slider.typeId) {
-                1,4 -> {
-                    sliderRepository.save(slider)
-                    val body = Body()
-                    body.slider = slider
-                    response.body = body
-                    response.status = HttpStatus.OK
-                }
-                2,3 -> {
-                    if (query.resultList.size > 0){
-                        val findSlider = query.resultList.get(0)
-                        slider.id = findSlider.id
-                    }
-                    sliderRepository.save(slider)
-                    val body = Body()
-                    body.slider = slider
-                    response.body = body
-                    response.status = HttpStatus.OK
-                }
-                else -> {
-                    val error = Problem(500,"TypeId düzgün deyil!","Not found Type id")
-                    response.problem = error
-                    response.status = HttpStatus.NOT_ACCEPTABLE
-                }
-            }
-
-        }catch (e:Exception){
-            val error = Problem(500,"Məzmun saxlanlayarkən problem yarandı!","${e.message}")
-            response.problem = error
-            response.status = HttpStatus.NOT_ACCEPTABLE
-            try {
-                storageService.removeFile(slider.imageName)
-            } catch (e: StorageException){
-                println("problem remove file: ${e.message}")
-            }
-        }
-
-        return response
-    }
-
 
 }
