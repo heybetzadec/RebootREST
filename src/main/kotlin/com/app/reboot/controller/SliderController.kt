@@ -30,7 +30,6 @@ class SliderController(@Autowired private val sliderRepository : SliderRepositor
     private lateinit var storageService: StorageService
 
 
-
 //    @RequestMapping(value = ["/slider/upload/img"], method = [RequestMethod.POST], consumes = ["multipart/form-data"])
 //    fun upload(@RequestParam file: MultipartFile, @RequestParam oldImage: String, @RequestParam type: Int, @RequestParam id: Long): Response {
 
@@ -122,7 +121,7 @@ class SliderController(@Autowired private val sliderRepository : SliderRepositor
             val content = result.get()
             var endIndex = if(content.html.length > 255)  255 else content.html.length
             val des = content.html.substring(0, endIndex).replace("\\<(.*?)\\>".toRegex(), "") + "..."
-            val slider = Slider(sliderId, type, content.title, des,"movzu/$id/ad/${content.link}", content.imageName,0,0, content.createDate, Date(), Date())
+            val slider = Slider(sliderId, type, content.title, des, Final.urlApp +"movzu/$id/ad/${content.link}", content.imageName,0,0, content.createDate, Date(), Date())
             slider.content = content
             val body = Body()
             body.slider = slider

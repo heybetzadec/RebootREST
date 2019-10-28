@@ -35,10 +35,8 @@ class ContentController(@Autowired private val contentRepository : ContentReposi
 
     @PersistenceContext
     lateinit var em: EntityManager
-
     @Autowired
     private lateinit var storageService: StorageService
-
 
     @RequestMapping(value = ["/content/upload/img"], method = [RequestMethod.POST], consumes = ["multipart/form-data"])
     fun upload(@RequestParam file: MultipartFile, @RequestParam oldImage: String) {
@@ -127,16 +125,30 @@ class ContentController(@Autowired private val contentRepository : ContentReposi
         val cb = em.criteriaBuilder
         val cq = cb.createQuery(Content::class.java)
         val root = cq.from(Content::class.java)
-        cq.select(root)
+//        cq.select(root)
+        cq.multiselect(
+                root.get<Long?>("id"),
+                root.get<String>("title"),
+                root.get<String>("imageName"),
+                root.get<Boolean>("visible"),
+                root.get<Int>("viewCount"),
+                root.get<Date>("createDate")
+//                cb.substring(root.get<String>("html"), 1, 200)
+        )
+//        cq.select(
+//                cb.construct(
+//                        Content::class.java,
+//                        root.get<String>("title")
+//                )
+//        )
 //        cq.where(
 //                cb.equal(root.get<Long>("mail"), "heybetzadec@gmail.com")
 //        )
-
         val orderList = listOf(cb.desc(root.get<Long>("id")))
         cq.orderBy(orderList)
         val query = em.createQuery<Content>(cq)
 
-        var contents = mutableListOf<Content>()
+        val contents: MutableList<Content>
         if (limit == 0) {
             contents = query.resultList
         } else {

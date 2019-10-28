@@ -34,7 +34,7 @@ class Category: Serializable {
 
     var visible: Boolean = true
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     var contents: Set<Content>? = null
 
     @Column(name="create_date", columnDefinition="TIMESTAMP DEFAULT CURRENT_TIMESTAMP")

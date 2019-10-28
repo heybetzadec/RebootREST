@@ -26,27 +26,26 @@ class Final {
         val mainRightWidth = 382
         val mainRightHeigh = 436
 
-
-            fun sliderDimension(type:Int): Dimension {
-                    var width = 0
-                    var height = 0
-                    when (type) {
-                            1 -> {
-                                    width = Final.sliderImageWidth
-                                    height = Final.sliderImageHeigh
-                            }
-                            2, 3 -> {
-                                    width = Final.mainTopBottomWidth
-                                    height = Final.mainTopBottomHeigh
-                            }
-                            4 -> {
-                                width = Final.mainRightWidth
-                                height = Final.mainRightHeigh
-                            }
-                    }
-
-                    return Dimension(width , height)
+        fun sliderDimension(type: Int): Dimension {
+            var width = 0
+            var height = 0
+            when (type) {
+                1 -> {
+                    width = Final.sliderImageWidth
+                    height = Final.sliderImageHeigh
+                }
+                2, 3 -> {
+                    width = Final.mainTopBottomWidth
+                    height = Final.mainTopBottomHeigh
+                }
+                4 -> {
+                    width = Final.mainRightWidth
+                    height = Final.mainRightHeigh
+                }
             }
+
+            return Dimension(width, height)
+        }
 
     }
 

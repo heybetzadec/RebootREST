@@ -1,11 +1,9 @@
 package com.app.reboot.entity
 
 import java.io.Serializable
-import javax.persistence.Column
-import javax.persistence.GeneratedValue
-import javax.persistence.GenerationType
-import javax.persistence.Id
+import javax.persistence.*
 
+@Entity
 class Tag: Serializable  {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -16,4 +14,7 @@ class Tag: Serializable  {
 
     @Column(length=255)
     var link: String = ""
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    var contents: Set<Content>? = null
 }
