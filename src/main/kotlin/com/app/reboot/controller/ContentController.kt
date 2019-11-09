@@ -14,12 +14,7 @@ import java.io.File
 import java.util.*
 import javax.persistence.EntityManager
 import javax.persistence.PersistenceContext
-import java.io.FileOutputStream
-import java.nio.file.Files
-import java.nio.file.Paths
-import java.util.Base64.getDecoder
 import com.app.reboot.exception.StorageException
-import com.app.reboot.repository.CategoryRepository
 import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RequestMethod

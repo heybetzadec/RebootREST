@@ -13,5 +13,6 @@ class Body {
     var categories: MutableList<Category>? = null
     var contents: MutableList<Content>? = null
     var sliders: MutableList<Slider>? = null
+    var categoryNodes: MutableList<CategoryNode>? = null
 
 }

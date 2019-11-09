@@ -1,22 +1,38 @@
 package com.app.reboot.controller
 
 import com.app.reboot.entity.Category
-import com.app.reboot.help.Body
-import com.app.reboot.help.Problem
-import com.app.reboot.help.Response
+import com.app.reboot.help.*
 import com.app.reboot.repository.CategoryRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
+import java.util.*
 import javax.persistence.EntityManager
 import javax.persistence.PersistenceContext
+
 
 @RestController
 class CategoryController (@Autowired private val categoryRepository : CategoryRepository) {
     @PersistenceContext
     lateinit var em: EntityManager
 
-    @RequestMapping(method = arrayOf(RequestMethod.GET), path = arrayOf("/categories/load"))
+    @RequestMapping(value = ["/category/get/model"], method = [RequestMethod.GET])
+    @Throws(Exception::class)
+    fun getModel(): Category {
+        return Category(
+                null,
+                "",
+                "",
+                "",
+                "",
+                "",
+                true,
+                Date(),
+                Date()
+        )
+    }
+
+    @RequestMapping(method = [RequestMethod.GET], path = ["/categories/load"])
     public fun loadDefault(): Response {
         val categories = mutableListOf<Category>()
         categories.add(Category("Elm","Ən son Elm və Texnologiya Xəbərləri","elm",true,"Elm və texnologiya dünyasının ən son xəbərləri ilə innovativ texnoloji elm xəbərlərindən agah olun!",""))
@@ -40,27 +56,55 @@ class CategoryController (@Autowired private val categoryRepository : CategoryRe
     @Throws(Exception::class)
     fun getCategories(@PathVariable offset :Int, @PathVariable limit: Int): Response{
         val response = Response()
-        val cb = em.criteriaBuilder
-        val cq = cb.createQuery(Category::class.java)
-        val root = cq.from(Category::class.java)
-        cq.select(root)
-//        cq.where(
-//                cb.equal(root.get<Long>("mail"), "heybetzadec@gmail.com")
-//        )
-        val query = em.createQuery<Category>(cq)
-        var categories = mutableListOf<Category>()
-        if (limit == 0) {
-            categories = query.resultList
-        } else {
-            categories = query.setFirstResult(offset).setMaxResults(limit).resultList
-        }
-        if (categories.size > 0) {
+        val categoryNodes = em.createQuery(
+                "select NEW com.app.reboot.help.CategoryNode(id, name, title, link, visible, parentCategory.id) " +
+                        "from Category c ", CategoryNode::class.java)
+//                .setParameter("parentCategoryId", 1L)
+                .resultList
+
+        if (categoryNodes.size > 0) {
             val body = Body()
-            body.categories = categories
+            categoryNodes.forEachIndexed { index, categoryNode ->
+                if (categoryNode.parentCategoryId != null){
+                    val parentCategory = categoryNodes.findLast { s -> s.data?.id == categoryNode.parentCategoryId }
+                    if (parentCategory?.children == null){
+                        parentCategory?.children = mutableListOf()
+                    }
+                    parentCategory?.children?.add(categoryNodes[index])
+                }
+            }
+            categoryNodes.removeAll { it.parentCategoryId !== null }
+            body.categoryNodes = categoryNodes
             response.body = body
             response.status = HttpStatus.OK
         } else {
-            val error = Problem(404,"Məlumat yoxdur!","Not found categories!")
+            val error = Problem(404,"Məlumat yoxdur!","Not found contents!")
+            response.problem = error
+            response.status = HttpStatus.NOT_ACCEPTABLE
+        }
+        return  response
+    }
+
+    @RequestMapping(value = ["categories/get/select"], method = [RequestMethod.GET])
+    @Throws(Exception::class)
+    fun getCategoriesForSelect(): Response{
+        val response = Response()
+        val cb = em.criteriaBuilder
+        val cq = cb.createQuery(Category::class.java)
+        val root = cq.from(Category::class.java)
+//        cq.select(root)
+        val orderList = listOf(cb.desc(root.get<Long>("id")))
+        cq.orderBy(orderList)
+        val query = em.createQuery<Category>(cq)
+        val categories: MutableList<Category>
+        categories = query.resultList
+        if (categories.size > 0) {
+            val body = Body()
+            response.body = body
+            response.body?.categories = categories
+            response.status = HttpStatus.OK
+        } else {
+            val error = Problem(404,"Məlumat yoxdur!","Not found contents!")
             response.problem = error
             response.status = HttpStatus.NOT_ACCEPTABLE
         }
@@ -68,9 +112,9 @@ class CategoryController (@Autowired private val categoryRepository : CategoryRe
     }
 
 
-    @RequestMapping(value = ["/addcategory"], method = [RequestMethod.POST])
+    @RequestMapping(value = ["/category/add"], method = [RequestMethod.POST])
     @Throws(Exception::class)
-    fun addUser(@RequestBody category :Category): Response {
+    fun addCategory(@RequestBody category :Category): Response {
         val response = Response()
         val cb = em.criteriaBuilder
         val cq = cb.createQuery(Category::class.java)
@@ -95,7 +139,7 @@ class CategoryController (@Autowired private val categoryRepository : CategoryRe
         return response
     }
 
-    @RequestMapping(value = ["/editcategory"], method = [RequestMethod.POST])
+    @RequestMapping(value = ["/category/edit"], method = [RequestMethod.POST])
     @Throws(Exception::class)
     fun editUser(@RequestBody category :Category): Response {
         val response = Response()
@@ -114,7 +158,7 @@ class CategoryController (@Autowired private val categoryRepository : CategoryRe
         return response
     }
 
-    @RequestMapping(value = ["/removeuser"], method = [RequestMethod.DELETE])
+    @RequestMapping(value = ["/category/remove"], method = [RequestMethod.DELETE])
     fun removeUser(@RequestBody category :Category): Response {
         val response = Response()
         if (categoryRepository.existsById(category.id ?: 0)){
