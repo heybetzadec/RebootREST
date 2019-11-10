@@ -32,6 +32,25 @@ class CategoryController (@Autowired private val categoryRepository : CategoryRe
         )
     }
 
+    @RequestMapping(value = ["/category/get/id/{id}"], method = [RequestMethod.GET])
+    @Throws(Exception::class)
+    fun getCategory(@PathVariable id :Long): Response {
+        val response = Response()
+        val result = categoryRepository.findById(id)
+        if (result.isEmpty){
+            val error = Problem(404,"Məlumat yoxdur!","Not found contents!")
+            response.problem = error
+            response.status = HttpStatus.NOT_ACCEPTABLE
+        } else {
+            val category = result.get()
+            val body = Body()
+            body.category = category
+            response.body = body
+        }
+        response.status = HttpStatus.OK
+        return  response
+    }
+
     @RequestMapping(method = [RequestMethod.GET], path = ["/categories/load"])
     public fun loadDefault(): Response {
         val categories = mutableListOf<Category>()
@@ -173,7 +192,7 @@ class CategoryController (@Autowired private val categoryRepository : CategoryRe
         return response
     }
 
-    @RequestMapping(value = ["/removecategory/id/{id}"], method = [RequestMethod.DELETE])
+    @RequestMapping(value = ["/category/remove/id/{id}"], method = [RequestMethod.DELETE])
     fun removeUser(@PathVariable id:Long): Response {
         val response = Response()
         if (categoryRepository.existsById(id)){

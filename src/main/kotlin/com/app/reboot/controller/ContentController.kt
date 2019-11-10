@@ -54,6 +54,7 @@ class ContentController(@Autowired private val contentRepository : ContentReposi
         response.status = HttpStatus.OK
         try {
             storageService.removeFile(name)
+            storageService.removeFile("th_$name")
         } catch (e: StorageException){
             println("problem remove file: ${e.message}")
         }
@@ -194,13 +195,17 @@ class ContentController(@Autowired private val contentRepository : ContentReposi
                 response.status = HttpStatus.OK
             }
         }catch (e:Exception){
+            e.printStackTrace()
             val error = Problem(500,"Məzmun saxlanlayarkən problem yarandı!","${e.message}")
             response.problem = error
             response.status = HttpStatus.NOT_ACCEPTABLE
-            try {
-                storageService.removeFile(content.imageName)
-            } catch (e: StorageException){
-                println("problem remove file: ${e.message}")
+            if (content.id == null) {
+                try {
+                    storageService.removeFile(content.imageName)
+                    storageService.removeFile("th_${content.imageName}")
+                } catch (e: StorageException) {
+                    println("problem remove file: ${e.message}")
+                }
             }
         }
 

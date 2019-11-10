@@ -37,11 +37,11 @@ class Content :Serializable{
     var html: String = ""
 
     @ManyToMany(fetch = FetchType.LAZY)
-    @JsonIgnore
+//    @JsonIgnore
     var categories: List<Category>? = null
 
     @ManyToMany(fetch = FetchType.LAZY)
-    @JsonIgnore
+//    @JsonIgnore
     var tags: List<Tag>? = null
 
     @Column(name="add_user_id")
