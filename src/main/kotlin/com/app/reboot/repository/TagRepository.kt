@@ -1,4 +1,6 @@
 package com.app.reboot.repository
 
-interface TagRepository {
-}
+import com.app.reboot.entity.Tag
+import org.springframework.data.jpa.repository.JpaRepository
+
+interface TagRepository : JpaRepository<Tag, Long>

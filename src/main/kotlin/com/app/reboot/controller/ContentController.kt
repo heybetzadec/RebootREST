@@ -15,6 +15,9 @@ import java.util.*
 import javax.persistence.EntityManager
 import javax.persistence.PersistenceContext
 import com.app.reboot.exception.StorageException
+import com.app.reboot.repository.TagRepository
+import org.hibernate.exception.ConstraintViolationException
+import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RequestMethod
@@ -26,7 +29,7 @@ import java.time.LocalDateTime
 
 
 @RestController
-class ContentController(@Autowired private val contentRepository : ContentRepository) {
+class ContentController(@Autowired private val contentRepository : ContentRepository, @Autowired private val tagRepository : TagRepository) {
 
     @PersistenceContext
     lateinit var em: EntityManager
@@ -163,31 +166,49 @@ class ContentController(@Autowired private val contentRepository : ContentReposi
         return  response
     }
 
-    @RequestMapping(value = ["/content/add"], method = [RequestMethod.POST])
+    @RequestMapping(value = ["/content/save"], method = [RequestMethod.POST])
     @Throws(Exception::class)
     fun addContent(@RequestBody content : Content): Response {
         val response = Response()
-        val cb = em.criteriaBuilder
-        val cq = cb.createQuery(Content::class.java)
-        val root = cq.from(Content::class.java)
-        cq.select(root)
-        cq.where(
-                cb.equal(root.get<String>("link"), content.link)
-        )
-        val query = em.createQuery<Content>(cq)
+
+        var linkUnique = false
+        var isNew = false
+        if (content.id == null){
+            isNew = true
+            val cb = em.criteriaBuilder
+            val cq = cb.createQuery(Content::class.java)
+            val root = cq.from(Content::class.java)
+            cq.select(root)
+            cq.where(
+                    cb.equal(root.get<String>("link"), content.link)
+            )
+            val query = em.createQuery<Content>(cq)
+            if (query.resultList.size == 0)
+                linkUnique = true
+        }
 
         try {
-            if(query.resultList.size == 0){
+            content.tags?.forEach {
+                try {
+                    tagRepository.save(it)
+                }catch (e:DataIntegrityViolationException){
+                    println("${it.name} alredy exist! Probllem: ${e.message}")
+                }
+            }
+
+            if(linkUnique){
                 contentRepository.save(content)
                 val body = Body()
                 body.content = content
                 response.body = body
                 response.status = HttpStatus.OK
             } else {
-                val now = LocalDateTime.now().toString()
-                val len = now.length
-                val forLink = now.substring(IntRange(len-5,len-1))
-                content.link = "${content.link}_$forLink"
+                if (isNew){
+                    val now = LocalDateTime.now().toString()
+                    val len = now.length
+                    val forLink = now.substring(IntRange(len-5,len-1))
+                    content.link = "${content.link}_$forLink"
+                }
                 contentRepository.save(content)
                 val body = Body()
                 body.content = content
@@ -207,26 +228,6 @@ class ContentController(@Autowired private val contentRepository : ContentReposi
                     println("problem remove file: ${e.message}")
                 }
             }
-        }
-
-        return response
-    }
-
-    @RequestMapping(value = ["/content/edit"], method = [RequestMethod.POST])
-    @Throws(Exception::class)
-    fun editContent(@RequestBody content : Content): Response {
-        val response = Response()
-
-        if(contentRepository.existsById(content.id ?: 0)){
-            contentRepository.save(content)
-            val body = Body()
-            body.content = content
-            response.body = body
-            response.status = HttpStatus.OK
-        } else {
-            val error = Problem(503,"Redaktəsi istənilən istifadəçisi yoxdur.","${content.title} not found!")
-            response.problem = error
-            response.status = HttpStatus.NOT_ACCEPTABLE
         }
         return response
     }

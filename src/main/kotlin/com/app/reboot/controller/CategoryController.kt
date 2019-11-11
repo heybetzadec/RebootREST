@@ -1,11 +1,13 @@
 package com.app.reboot.controller
 
 import com.app.reboot.entity.Category
+import com.app.reboot.entity.Tag
 import com.app.reboot.help.*
 import com.app.reboot.repository.CategoryRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
+import java.time.LocalDateTime
 import java.util.*
 import javax.persistence.EntityManager
 import javax.persistence.PersistenceContext
@@ -77,7 +79,7 @@ class CategoryController (@Autowired private val categoryRepository : CategoryRe
         val response = Response()
         val categoryNodes = em.createQuery(
                 "select NEW com.app.reboot.help.CategoryNode(id, name, title, link, visible, parentCategory.id) " +
-                        "from Category c ", CategoryNode::class.java)
+                        "from Category c order by id desc", CategoryNode::class.java)
 //                .setParameter("parentCategoryId", 1L)
                 .resultList
 
@@ -131,51 +133,57 @@ class CategoryController (@Autowired private val categoryRepository : CategoryRe
     }
 
 
-    @RequestMapping(value = ["/category/add"], method = [RequestMethod.POST])
+    @RequestMapping(value = ["/category/save"], method = [RequestMethod.POST])
     @Throws(Exception::class)
-    fun addCategory(@RequestBody category :Category): Response {
+    fun saveCategory(@RequestBody category :Category): Response {
         val response = Response()
-        val cb = em.criteriaBuilder
-        val cq = cb.createQuery(Category::class.java)
-        val root = cq.from(Category::class.java)
-        cq.select(root)
-        cq.where(
-                cb.equal(root.get<Long>("link"), category.link)
-        )
-        val query = em.createQuery<Category>(cq)
+        var linkUnique = false
+        var isNew = false
+        if (category.id == null){
+            isNew = true
+            val cb = em.criteriaBuilder
+            val cq = cb.createQuery(Category::class.java)
+            val root = cq.from(Category::class.java)
+            cq.select(root)
+            if (category.id == null){
+                cq.where(
+                        cb.equal(root.get<Long>("link"), category.link)
+                )
+            }
+            val query = em.createQuery<Category>(cq)
+            if (query.resultList.size == 0)
+                linkUnique = true
+        }
 
-        if(query.resultList.size == 0){
-            categoryRepository.save(category)
-            val body = Body()
-            body.category = category
-            response.body = body
-            response.status = HttpStatus.OK
-        } else {
+        try {
+            if(linkUnique){
+                categoryRepository.save(category)
+                val body = Body()
+                body.category = category
+                response.body = body
+                response.status = HttpStatus.OK
+            } else {
+                if (isNew){
+                    val now = LocalDateTime.now().toString()
+                    val len = now.length
+                    val forLink = now.substring(IntRange(len-5,len-1))
+                    category.link = "${category.link}_$forLink"
+                }
+                categoryRepository.save(category)
+                val body = Body()
+                body.category = category
+                response.body = body
+                response.status = HttpStatus.OK
+            }
+        } catch (e:Exception){
             val error = Problem(503,"Link bənzərsiz olmalıdır!","${category.link} alredy exist!")
             response.problem = error
             response.status = HttpStatus.NOT_ACCEPTABLE
         }
+
         return response
     }
 
-    @RequestMapping(value = ["/category/edit"], method = [RequestMethod.POST])
-    @Throws(Exception::class)
-    fun editUser(@RequestBody category :Category): Response {
-        val response = Response()
-
-        if(categoryRepository.existsById(category.id ?: 0)){
-            categoryRepository.save(category)
-            val body = Body()
-            body.category = category
-            response.body = body
-            response.status = HttpStatus.OK
-        } else {
-            val error = Problem(503,"Redaktəsi istənilən kateqoria yoxdur.","${category.name} not found!")
-            response.problem = error
-            response.status = HttpStatus.NOT_ACCEPTABLE
-        }
-        return response
-    }
 
     @RequestMapping(value = ["/category/remove"], method = [RequestMethod.DELETE])
     fun removeUser(@RequestBody category :Category): Response {

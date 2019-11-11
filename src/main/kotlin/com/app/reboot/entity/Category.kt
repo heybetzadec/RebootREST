@@ -98,9 +98,26 @@ class Category: Serializable {
         this.link = link
     }
 
+    constructor(id: Long?, name: String, title: String, link: String, description: String, keyword: String, visible: Boolean, contents: Set<Content>?, parentCategory: Category?, createDate: Date, updateDate: Date, parentId: Long?, parentName: String?, parentLink: String?) {
+        this.id = id
+        this.name = name
+        this.title = title
+        this.link = link
+        this.description = description
+        this.keyword = keyword
+        this.visible = visible
+        this.contents = contents
+        this.parentCategory = parentCategory
+        this.createDate = createDate
+        this.updateDate = updateDate
+        this.parentId = parentId
+        this.parentName = parentName
+        this.parentLink = parentLink
+    }
+
 
     override fun toString(): String {
-        return "Category(id=$id, name='$name', title='$title', link='$link', description='$description', keyword='$keyword', visible=$visible, createDate=$createDate, updateDate=$updateDate)"
+        return "Category(id=$id, name='$name', title='$title', link='$link', description='$description', keyword='$keyword', visible=$visible, parentt=${parentCategory?.name})"
     }
 
 }

@@ -22,7 +22,10 @@ class User:Serializable  {
     var age: Int? = null
 
     @Column(length=255)
-    var logo: String = ""
+    var logo: String? = null
+
+    @Column
+    var isMan = true
 
     @Column(length=40)
     var mail: String = ""

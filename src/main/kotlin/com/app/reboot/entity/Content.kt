@@ -38,11 +38,11 @@ class Content :Serializable{
 
     @ManyToMany(fetch = FetchType.LAZY)
 //    @JsonIgnore
-    var categories: List<Category>? = null
+    var categories: MutableList<Category>? = null
 
     @ManyToMany(fetch = FetchType.LAZY)
 //    @JsonIgnore
-    var tags: List<Tag>? = null
+    var tags: MutableList<Tag>? = null
 
     @Column(name="add_user_id")
     var addUserId:Int = 0
@@ -62,7 +62,6 @@ class Content :Serializable{
     @Column(name="update_date", columnDefinition="TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     var updateDate: Date = Date()
-
 
 
     constructor(id: Long?, title: String, link: String, imageName: String, embed: String, description: String, keyword: String, html: String, addUserId: Int, editUserId: Int, visible: Boolean, viewCount: Int, createDate: Date, updateDate: Date) {
