@@ -26,4 +26,10 @@ class Response {
         this.date = Date()
     }
 
+    constructor(status: HttpStatus?, body: Body?) {
+        this.status = status
+        this.body = body
+        this.date = Date()
+    }
+
 }

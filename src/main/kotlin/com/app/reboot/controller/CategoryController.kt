@@ -70,7 +70,7 @@ class CategoryController (@Autowired private val categoryRepository : CategoryRe
         }
         val body = Body()
         body.categories = categories
-        return Response(HttpStatus.OK, Problem(0,"sehv var","NullPointerException"), body)
+        return Response(HttpStatus.OK,  body)
     }
 
     @RequestMapping(value = ["categories/get/offset/{offset}/limit/{limit}"], method = [RequestMethod.GET])

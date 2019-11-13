@@ -27,8 +27,11 @@ class User:Serializable  {
     @Column
     var isMan = true
 
-    @Column(length=40)
+    @Column(length=60)
     var mail: String = ""
+
+    @Column(length=60)
+    var username: String = ""
 
     @Column(length=60)
     var password: String = ""
@@ -62,13 +65,15 @@ class User:Serializable  {
 
     constructor()
 
-    constructor(name: String, surname: String, mail:String, password: String, logo:String) {
+    constructor(name: String, surname: String, username: String, mail: String, password: String, isActive: Boolean) {
         this.name = name
         this.surname = surname
+        this.username = username
         this.mail = mail
         this.password = password
-        this.logo = logo
+        this.isActive = isActive
     }
+
 
     override fun toString(): String {
         return "User(id=$id, rank=${rank?.name}, name='$name', surname='$surname', age=$age, logo='$logo', mail='$mail', password='$password', pin='$pin', isActive=$isActive, note='$note', lastLoginDate=$lastLoginDate, createDate=$createDate, updateDate=$updateDate)"
