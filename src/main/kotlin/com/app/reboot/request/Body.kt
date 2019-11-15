@@ -1,11 +1,13 @@
 package com.app.reboot.request
 
-import com.app.reboot.entity.*
+import com.app.reboot.entity.Category
+import com.app.reboot.entity.Content
+import com.app.reboot.entity.Slider
+import com.app.reboot.entity.User
 
 class Body {
     var user: User? = null
     var category: Category? = null
-    var rank:Rank? = null
     var content:Content? = null
     var slider:Slider? = null
 

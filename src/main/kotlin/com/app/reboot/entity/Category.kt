@@ -1,11 +1,9 @@
 package com.app.reboot.entity
 
 import com.fasterxml.jackson.annotation.JsonFormat
-import org.hibernate.annotations.Where
 import java.io.Serializable
 import java.util.*
 import javax.persistence.*
-
 
 
 @Entity

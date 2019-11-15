@@ -4,12 +4,12 @@ package com.app.reboot.controller
 import com.app.reboot.entity.Content
 import com.app.reboot.entity.Slider
 import com.app.reboot.exception.StorageException
+import com.app.reboot.repository.ContentRepository
+import com.app.reboot.repository.SliderRepository
 import com.app.reboot.request.Body
 import com.app.reboot.request.Final
 import com.app.reboot.request.Problem
 import com.app.reboot.request.Response
-import com.app.reboot.repository.ContentRepository
-import com.app.reboot.repository.SliderRepository
 import com.app.reboot.service.StorageService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus

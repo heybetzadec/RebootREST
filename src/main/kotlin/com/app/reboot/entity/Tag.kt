@@ -1,7 +1,5 @@
 package com.app.reboot.entity
 
-import org.hibernate.annotations.DynamicInsert
-import org.hibernate.annotations.DynamicUpdate
 import java.io.Serializable
 import javax.persistence.*
 

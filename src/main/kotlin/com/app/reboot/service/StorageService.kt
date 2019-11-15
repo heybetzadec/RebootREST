@@ -1,25 +1,22 @@
 package com.app.reboot.service
 
+import com.app.reboot.exception.StorageException
+import com.app.reboot.request.Final
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
-
-import java.io.IOException
-import java.nio.file.Files
-import java.nio.file.Paths
-import java.nio.file.StandardCopyOption
-import com.app.reboot.exception.StorageException
-import com.app.reboot.request.Final
 import java.awt.Color
 import java.awt.Image
 import java.awt.image.BufferedImage
-import java.io.ByteArrayOutputStream
-import java.nio.file.DirectoryNotEmptyException
-import javax.imageio.ImageIO
 import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
 import java.io.File
-
-
+import java.io.IOException
+import java.nio.file.DirectoryNotEmptyException
+import java.nio.file.Files
+import java.nio.file.Paths
+import java.nio.file.StandardCopyOption
+import javax.imageio.ImageIO
 
 
 @Service

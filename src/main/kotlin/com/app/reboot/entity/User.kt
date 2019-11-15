@@ -19,9 +19,6 @@ class User:Serializable  {
     @Column(length=40)
     var surname: String = ""
 
-    @Column(length=40)
-    var role: String = ""
-
     var age: Int? = null
 
     @Column(length=255)
@@ -36,7 +33,7 @@ class User:Serializable  {
     @Column(length=60)
     var username: String = ""
 
-    @Column(length=60)
+    @Column(length=255)
     var password: String = ""
 
     @Column(length=40)
@@ -46,12 +43,16 @@ class User:Serializable  {
     @Type(type = "org.hibernate.type.NumericBooleanType")
     var isActive: Boolean = true
 
-    @Column(name = "is_admin", columnDefinition = "TINYINT")
+    @Column(name = "token_expired", columnDefinition = "TINYINT")
     @Type(type = "org.hibernate.type.NumericBooleanType")
-    var isAdmin: Boolean = true
+    var tokenExpired: Boolean = true
 
     @Column(length=255)
     var note: String = ""
+
+    @ManyToMany
+    @JoinTable(name = "users_roles", joinColumns = [JoinColumn(name = "user_id", referencedColumnName = "id")], inverseJoinColumns = [JoinColumn(name = "role_id", referencedColumnName = "id")])
+    var roles: Collection<Role>? = null
 
     @Column(name="last_login", columnDefinition="TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     var lastLoginDate: Date = Date()
@@ -62,9 +63,6 @@ class User:Serializable  {
     @Column(name="update_date", columnDefinition="TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     var updateDate: Date = Date()
 
-    @OneToOne
-    @JoinColumn(name = "rank_id", referencedColumnName = "id")
-    private var rank: Rank? = null
 
     constructor()
 
@@ -79,7 +77,7 @@ class User:Serializable  {
 
 
     override fun toString(): String {
-        return "User(id=$id, rank=${rank?.name}, name='$name', surname='$surname', age=$age, logo='$logo', mail='$mail', password='$password', pin='$pin', isActive=$isActive, note='$note', lastLoginDate=$lastLoginDate, createDate=$createDate, updateDate=$updateDate)"
+        return "User(id=$id, name='$name', surname='$surname', age=$age, logo='$logo', mail='$mail', password='$password', pin='$pin', isActive=$isActive, note='$note', lastLoginDate=$lastLoginDate, createDate=$createDate, updateDate=$updateDate)"
     }
 
 }
