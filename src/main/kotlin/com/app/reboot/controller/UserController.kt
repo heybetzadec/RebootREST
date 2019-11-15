@@ -18,7 +18,7 @@ class UserController (@Autowired private val userRepository : UserRepository){
     lateinit var em: EntityManager
 
     @RequestMapping(method = [RequestMethod.GET], path = ["/users/load"])
-    fun loadDefault(): Response {
+    public fun loadDefault(): Response {
         val users = mutableListOf<User>(
                 User("Cavad", "Heybətzadə", "hecaheybet", "heybetzadec@gmail.com", "12345678", true),
                 User("Toğrul", "İbrahimov", "togrul", "togrul@gmail.com", "12345678", true)

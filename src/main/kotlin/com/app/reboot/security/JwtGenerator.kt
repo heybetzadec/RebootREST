@@ -1,6 +1,7 @@
 package com.app.reboot.security
 
-import com.app.reboot.entity.User
+import com.app.reboot.request.Final
+import com.app.reboot.request.JwtUser
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
@@ -10,7 +11,7 @@ import org.springframework.stereotype.Component
 class JwtGenerator {
 
 
-    fun generate(jwtUser: User): String {
+    fun generate(jwtUser: JwtUser): String {
 
 
         val claims:Claims = Jwts.claims()
@@ -21,7 +22,7 @@ class JwtGenerator {
 
         return Jwts.builder()
                 .setClaims(claims)
-                .signWith(SignatureAlgorithm.HS512, "youtube")
+                .signWith(SignatureAlgorithm.HS512, Final.jwtSecretKey)
                 .compact()
     }
 }

@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletResponse
 import java.io.IOException
 
 
-class JwtAuthenticationTokenFilter : AbstractAuthenticationProcessingFilter("/rest/**") {
+class JwtAuthenticationTokenFilter : AbstractAuthenticationProcessingFilter("/secure/**") {
 
     @Throws(AuthenticationException::class, IOException::class, ServletException::class)
     override fun attemptAuthentication(httpServletRequest: HttpServletRequest, httpServletResponse: HttpServletResponse): Authentication {

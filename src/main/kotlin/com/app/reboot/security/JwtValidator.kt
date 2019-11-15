@@ -1,6 +1,7 @@
 package com.app.reboot.security
 
-import com.app.reboot.entity.User
+import com.app.reboot.request.Final
+import com.app.reboot.request.JwtUser
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
 import org.springframework.stereotype.Component
@@ -8,19 +9,19 @@ import org.springframework.stereotype.Component
 class JwtValidator {
 
 
-    private val secret = "youtube"
+//    private val secret = "youtube"
 
-    fun validate(token: String): User? {
+    fun validate(token: String): JwtUser? {
 
-        var jwtUser: User? = null
+        var jwtUser: JwtUser? = null
         try {
-            val body = Jwts.parser()
-                    .setSigningKey(secret)
+            val body:Claims = Jwts.parser()
+                    .setSigningKey(Final.jwtSecretKey)
                     .parseClaimsJws(token)
                     .body
-            jwtUser = User()
+            jwtUser = JwtUser()
 
-            jwtUser.name = body.getSubject()
+            jwtUser.username = body.getSubject()
             jwtUser.id = java.lang.Long.parseLong(body["userId"] as String)
             jwtUser.role = (body.get("role") as String)
         } catch (e: Exception) {

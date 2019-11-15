@@ -17,6 +17,12 @@ class CategoryController (@Autowired private val categoryRepository : CategoryRe
     @PersistenceContext
     lateinit var em: EntityManager
 
+    @RequestMapping(value = ["/secure/get/hello"], method = [RequestMethod.GET])
+    @Throws(Exception::class)
+    fun getHello(): String {
+        return "Hello HeCa"
+    }
+
     @RequestMapping(value = ["/category/get/model"], method = [RequestMethod.GET])
     @Throws(Exception::class)
     fun getModel(): Category {

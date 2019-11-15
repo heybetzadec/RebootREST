@@ -11,6 +11,8 @@ class Final {
         val urlApp = "http://localhost:8080/"
         val urlREST = "http://localhost:8081/"
 
+        val jwtSecretKey = "rebootapp"
+
         val thubnailWidth = 450
         val thubnailHeigh = 250
 
