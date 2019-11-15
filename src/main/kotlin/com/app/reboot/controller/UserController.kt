@@ -1,9 +1,8 @@
 package com.app.reboot.controller
 
 import com.app.reboot.entity.User
-import com.app.reboot.help.Body
-import com.app.reboot.help.Problem
-import com.app.reboot.help.Response
+import com.app.reboot.request.Body
+import com.app.reboot.request.Response
 import com.app.reboot.repository.UserRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
@@ -19,7 +18,7 @@ class UserController (@Autowired private val userRepository : UserRepository){
     lateinit var em: EntityManager
 
     @RequestMapping(method = [RequestMethod.GET], path = ["/users/load"])
-    public fun loadDefault(): Response {
+    fun loadDefault(): Response {
         val users = mutableListOf<User>(
                 User("Cavad", "Heybətzadə", "hecaheybet", "heybetzadec@gmail.com", "12345678", true),
                 User("Toğrul", "İbrahimov", "togrul", "togrul@gmail.com", "12345678", true)

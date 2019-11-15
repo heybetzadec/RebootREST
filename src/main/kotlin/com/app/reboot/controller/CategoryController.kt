@@ -1,8 +1,7 @@
 package com.app.reboot.controller
 
 import com.app.reboot.entity.Category
-import com.app.reboot.entity.Tag
-import com.app.reboot.help.*
+import com.app.reboot.request.*
 import com.app.reboot.repository.CategoryRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
@@ -54,7 +53,7 @@ class CategoryController (@Autowired private val categoryRepository : CategoryRe
     }
 
     @RequestMapping(method = [RequestMethod.GET], path = ["/categories/load"])
-    public fun loadDefault(): Response {
+    fun loadDefault(): Response {
         val categories = mutableListOf<Category>()
         categories.add(Category("Elm","Ən son Elm və Texnologiya Xəbərləri","elm",true,"Elm və texnologiya dünyasının ən son xəbərləri ilə innovativ texnoloji elm xəbərlərindən agah olun!",""))
         categories.add(Category("Cihazlar","Kompüter və mobil cihaz xəbərləri","cihazlar",true,"Elm və texnologiya dünyasının ən son xəbərləri ilə innovativ texnoloji elm xəbərlərindən agah olun!",""))

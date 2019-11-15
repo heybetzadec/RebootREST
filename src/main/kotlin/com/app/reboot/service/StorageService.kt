@@ -1,15 +1,15 @@
 package com.app.reboot.service
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.stereotype.Service
+import org.springframework.web.multipart.MultipartFile
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
+import java.io.IOException
+import java.nio.file.Files
+import java.nio.file.Paths
+import java.nio.file.StandardCopyOption
 import com.app.reboot.exception.StorageException
-import com.app.reboot.help.Final
+import com.app.reboot.request.Final
 import java.awt.Color
 import java.awt.Image
 import java.awt.image.BufferedImage
@@ -139,7 +139,7 @@ class StorageService {
         val `in` = ByteArrayInputStream(fileData)
         try {
 
-            val times = 2 //(int) (currentSize / maxSize);
+            val times = 2 //(int) (currentSize / maxSize)
 
             val img = ImageIO.read(`in`)
             var width = img.width / times
@@ -171,7 +171,7 @@ class StorageService {
 
     fun removeFile(fileName:String) {
         try {
-            Files.deleteIfExists(Paths.get(path!! + fileName!!))
+            Files.deleteIfExists(Paths.get(path!! + fileName))
         } catch (e: NoSuchFileException){
             throw StorageException("Failed file delete")
         } catch (e: DirectoryNotEmptyException){

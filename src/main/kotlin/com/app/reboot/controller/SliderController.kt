@@ -4,10 +4,10 @@ package com.app.reboot.controller
 import com.app.reboot.entity.Content
 import com.app.reboot.entity.Slider
 import com.app.reboot.exception.StorageException
-import com.app.reboot.help.Body
-import com.app.reboot.help.Final
-import com.app.reboot.help.Problem
-import com.app.reboot.help.Response
+import com.app.reboot.request.Body
+import com.app.reboot.request.Final
+import com.app.reboot.request.Problem
+import com.app.reboot.request.Response
 import com.app.reboot.repository.ContentRepository
 import com.app.reboot.repository.SliderRepository
 import com.app.reboot.service.StorageService
@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
-import java.time.LocalDateTime
 import java.util.*
 import javax.persistence.EntityManager
 import javax.persistence.PersistenceContext
@@ -88,6 +87,7 @@ class SliderController(@Autowired private val sliderRepository : SliderRepositor
     }
 
 
+    @Suppress("ASSIGNED_BUT_NEVER_ACCESSED_VARIABLE")
     @RequestMapping(value = ["/slider/get/model/type/{type}/id/{id}"], method = [RequestMethod.GET])
     @Throws(Exception::class)
     fun getModel(@PathVariable type :Int, @PathVariable id :Long): Response {

@@ -1,12 +1,12 @@
-package com.app.reboot.help
+package com.app.reboot.request
 
 import java.awt.Dimension
 
 class Final {
     companion object {
-        val TINYBLOB_LENGTH: Long = 255
-        val BLOB_LENGTH: Long = 65535
-        val MEDIUMBLOB_LENGTH: Long = 16777215
+//        val TINYBLOB_LENGTH: Long = 255
+//        val BLOB_LENGTH: Long = 65535
+//        val MEDIUMBLOB_LENGTH: Long = 16777215
 
         val urlApp = "http://localhost:8080/"
         val urlREST = "http://localhost:8081/"
@@ -31,16 +31,16 @@ class Final {
             var height = 0
             when (type) {
                 1 -> {
-                    width = Final.sliderImageWidth
-                    height = Final.sliderImageHeigh
+                    width = sliderImageWidth
+                    height = sliderImageHeigh
                 }
                 2, 3 -> {
-                    width = Final.mainTopBottomWidth
-                    height = Final.mainTopBottomHeigh
+                    width = mainTopBottomWidth
+                    height = mainTopBottomHeigh
                 }
                 4 -> {
-                    width = Final.mainRightWidth
-                    height = Final.mainRightHeigh
+                    width = mainRightWidth
+                    height = mainRightHeigh
                 }
             }
 

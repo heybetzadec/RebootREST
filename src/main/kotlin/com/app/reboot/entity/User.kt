@@ -19,6 +19,9 @@ class User:Serializable  {
     @Column(length=40)
     var surname: String = ""
 
+    @Column(length=40)
+    var role: String = ""
+
     var age: Int? = null
 
     @Column(length=255)
