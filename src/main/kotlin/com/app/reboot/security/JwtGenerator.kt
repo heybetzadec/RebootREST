@@ -1,7 +1,7 @@
 package com.app.reboot.security
 
-import com.app.reboot.request.Final
-import com.app.reboot.request.JwtUser
+import com.app.reboot.config.Final
+import com.app.reboot.response.JwtUser
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm

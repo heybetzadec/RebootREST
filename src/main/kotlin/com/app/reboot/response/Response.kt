@@ -1,4 +1,4 @@
-package com.app.reboot.request
+package com.app.reboot.response
 
 import org.springframework.http.HttpStatus
 import java.util.*

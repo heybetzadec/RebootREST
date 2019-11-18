@@ -1,4 +1,4 @@
-package com.app.reboot.request
+package com.app.reboot.response
 
 class CategoryNode(id: Long?, name: String, title: String, link: String, visible: Boolean, var parentCategoryId: Long?) {
 

@@ -6,11 +6,12 @@ import com.app.reboot.entity.Slider
 import com.app.reboot.exception.StorageException
 import com.app.reboot.repository.ContentRepository
 import com.app.reboot.repository.SliderRepository
-import com.app.reboot.request.Body
-import com.app.reboot.request.Final
-import com.app.reboot.request.Problem
-import com.app.reboot.request.Response
+import com.app.reboot.response.Body
+import com.app.reboot.config.Final
+import com.app.reboot.response.Problem
+import com.app.reboot.response.Response
 import com.app.reboot.service.StorageService
+import com.app.reboot.use.Function
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
@@ -46,7 +47,7 @@ class SliderController(@Autowired private val sliderRepository : SliderRepositor
                 response.status = HttpStatus.OK
                 val content = result.get()
                 if (!file.name.equals(content.imageName)){
-                    storageService.uploadImageSetSize(file, file.originalFilename ?: "img.jpg", Final.sliderDimension(type).width,Final.sliderDimension(type).height)
+                    storageService.uploadImageSetSize(file, file.originalFilename ?: "img.jpg", Function.sliderDimension(type).width, Function.sliderDimension(type).height)
                 }
                 try {
                     if (!oldImage.equals(content.imageName)){

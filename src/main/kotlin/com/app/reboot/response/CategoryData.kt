@@ -1,4 +1,4 @@
-package com.app.reboot.request
+package com.app.reboot.response
 
 
 class CategoryData(var id: Long?, var name: String, var title: String, var link: String, var visible: Boolean) {

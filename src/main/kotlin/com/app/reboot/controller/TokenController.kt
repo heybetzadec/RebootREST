@@ -1,6 +1,6 @@
 package com.app.reboot.controller
 
-import com.app.reboot.request.JwtUser
+import com.app.reboot.response.JwtUser
 import com.app.reboot.security.JwtGenerator
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody

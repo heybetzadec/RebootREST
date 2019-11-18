@@ -4,9 +4,9 @@ import com.app.reboot.entity.Content
 import com.app.reboot.exception.StorageException
 import com.app.reboot.repository.ContentRepository
 import com.app.reboot.repository.TagRepository
-import com.app.reboot.request.Body
-import com.app.reboot.request.Problem
-import com.app.reboot.request.Response
+import com.app.reboot.response.Body
+import com.app.reboot.response.Problem
+import com.app.reboot.response.Response
 import com.app.reboot.service.StorageService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.dao.DataIntegrityViolationException

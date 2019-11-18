@@ -1,4 +1,4 @@
-package com.app.reboot.request
+package com.app.reboot.response
 
 class Problem {
     var code:Int = 0

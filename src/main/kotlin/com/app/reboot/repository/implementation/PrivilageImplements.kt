@@ -2,31 +2,22 @@ package com.app.reboot.repository.implementation
 
 import com.app.reboot.entity.Privilege
 import com.app.reboot.repository.PrivilegeRepository
-import org.springframework.data.domain.Example
-import org.springframework.data.domain.Page
-import org.springframework.data.domain.Pageable
-import org.springframework.data.domain.Sort
-import org.springframework.stereotype.Repository
+import org.springframework.data.domain.*
 import java.util.*
-import javax.persistence.EntityManager
-import javax.persistence.PersistenceContext
+import org.springframework.data.domain.ExampleMatcher.GenericPropertyMatchers.startsWith
 
-@Repository
+
+
 class PrivilageImplements : PrivilegeRepository {
 
-    @PersistenceContext
-    lateinit var em: EntityManager
+//    @PersistenceContext
+//    lateinit var em: EntityManager
 
-    override fun findByName(name: String): MutableList<Privilege>? {
-        val cb = em.criteriaBuilder
-        val cq = cb.createQuery(Privilege::class.java)
-        val root = cq.from(Privilege::class.java)
-        cq.select(root)
-        cq.where(
-                cb.equal(root.get<String>("name"), name)
-        )
-        val query = em.createQuery<Privilege>(cq)
-        return query.resultList
+    override fun findByName(name: String): Optional<Privilege> {
+        val privilege = Privilege(name)
+        val matcher = ExampleMatcher.matching().withMatcher("name", startsWith())
+        val example = Example.of<Privilege>(privilege, matcher)
+        return findOne(example)
     }
 
     override fun <S : Privilege?> save(entity: S): S {

@@ -2,29 +2,28 @@ package com.app.reboot.repository.implementation
 
 import com.app.reboot.entity.User
 import com.app.reboot.repository.UserRepository
-import org.springframework.data.domain.Example
-import org.springframework.data.domain.Page
-import org.springframework.data.domain.Pageable
-import org.springframework.data.domain.Sort
+import org.springframework.data.domain.*
 import java.util.*
-import javax.persistence.EntityManager
-import javax.persistence.PersistenceContext
 
 class UserImplements :UserRepository{
 
-    @PersistenceContext
-    lateinit var em: EntityManager
+//    @PersistenceContext
+//    lateinit var em: EntityManager
 
-    override fun findByEmail(mail: String): MutableList<User>? {
-        val cb = em.criteriaBuilder
-        val cq = cb.createQuery(User::class.java)
-        val root = cq.from(User::class.java)
-        cq.select(root)
-        cq.where(
-                cb.equal(root.get<String>("mail"), mail)
-        )
-        val query = em.createQuery<User>(cq)
-        return query.resultList
+    override fun findByMail(mail: String): Optional<User> {
+//        val cb = em.criteriaBuilder
+//        val cq = cb.createQuery(User::class.java)
+//        val root = cq.from(User::class.java)
+//        cq.select(root)
+//        cq.where(
+//                cb.equal(root.get<String>("mail"), mail)
+//        )
+//        val query = em.createQuery<User>(cq)
+//        return query.resultList
+        val user = User(mail)
+        val matcher = ExampleMatcher.matching().withMatcher("mail", ExampleMatcher.GenericPropertyMatchers.startsWith())
+        val example = Example.of<User>(user, matcher)
+        return findOne(example)
     }
 
     override fun <S : User?> save(entity: S): S {

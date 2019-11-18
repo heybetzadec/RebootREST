@@ -1,7 +1,7 @@
 package com.app.reboot.service
 
 import com.app.reboot.exception.StorageException
-import com.app.reboot.request.Final
+import com.app.reboot.config.Final
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile

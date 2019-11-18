@@ -4,9 +4,11 @@ import java.io.Serializable
 import javax.persistence.*
 
 @Entity
+@Table(name = "tag_tbl")
 class Tag: Serializable  {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(nullable=false)
     var id: Long? = null
 
     @Column(length=255)

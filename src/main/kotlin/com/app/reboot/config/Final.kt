@@ -1,6 +1,12 @@
-package com.app.reboot.request
+package com.app.reboot.config
 
+import com.app.reboot.use.Encode
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import java.awt.Dimension
+import java.util.*
+import java.util.Base64.getDecoder
+import java.util.Base64.getEncoder
+
 
 class Final {
     companion object {
@@ -27,27 +33,6 @@ class Final {
 
         val mainRightWidth = 382
         val mainRightHeigh = 436
-
-        fun sliderDimension(type: Int): Dimension {
-            var width = 0
-            var height = 0
-            when (type) {
-                1 -> {
-                    width = sliderImageWidth
-                    height = sliderImageHeigh
-                }
-                2, 3 -> {
-                    width = mainTopBottomWidth
-                    height = mainTopBottomHeigh
-                }
-                4 -> {
-                    width = mainRightWidth
-                    height = mainRightHeigh
-                }
-            }
-
-            return Dimension(width, height)
-        }
 
     }
 

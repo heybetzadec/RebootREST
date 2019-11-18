@@ -1,7 +1,7 @@
 package com.app.reboot.security
 
-import com.app.reboot.request.JwtAuthenticationToken
-import com.app.reboot.request.JwtUserDetails
+import com.app.reboot.response.JwtAuthenticationToken
+import com.app.reboot.response.JwtUserDetails
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider

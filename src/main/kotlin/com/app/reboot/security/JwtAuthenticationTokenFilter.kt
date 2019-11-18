@@ -1,6 +1,6 @@
 package com.app.reboot.security
 
-import com.app.reboot.request.JwtAuthenticationToken
+import com.app.reboot.response.JwtAuthenticationToken
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.AuthenticationException
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter

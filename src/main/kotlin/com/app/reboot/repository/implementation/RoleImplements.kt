@@ -2,31 +2,32 @@ package com.app.reboot.repository.implementation
 
 import com.app.reboot.entity.Role
 import com.app.reboot.repository.RoleRepository
-import org.springframework.data.domain.Example
-import org.springframework.data.domain.Page
-import org.springframework.data.domain.Pageable
-import org.springframework.data.domain.Sort
+import org.springframework.data.domain.*
 import org.springframework.stereotype.Repository
 import java.util.*
 import javax.persistence.EntityManager
 import javax.persistence.PersistenceContext
 
-@Repository
+
 class RoleImplements : RoleRepository{
 
-    @PersistenceContext
-    lateinit var em: EntityManager
+//    @PersistenceContext
+//    lateinit var em: EntityManager
 
-    override fun findByName(name: String): MutableList<Role>? {
-        val cb = em.criteriaBuilder
-        val cq = cb.createQuery(Role::class.java)
-        val root = cq.from(Role::class.java)
-        cq.select(root)
-        cq.where(
-                cb.equal(root.get<String>("name"), name)
-        )
-        val query = em.createQuery<Role>(cq)
-        return query.resultList
+    override fun findByName(name: String): Optional<Role> {
+//        val cb = em.criteriaBuilder
+//        val cq = cb.createQuery(Role::class.java)
+//        val root = cq.from(Role::class.java)
+//        cq.select(root)
+//        cq.where(
+//                cb.equal(root.get<String>("name"), name)
+//        )
+//        val query = em.createQuery<Role>(cq)
+//        return query.resultList
+        val privilege = Role(name)
+        val matcher = ExampleMatcher.matching().withMatcher("name", ExampleMatcher.GenericPropertyMatchers.startsWith())
+        val example = Example.of<Role>(privilege, matcher)
+        return findOne(example)
     }
 
     override fun <S : Role?> save(entity: S): S {
