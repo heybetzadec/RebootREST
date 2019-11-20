@@ -51,9 +51,9 @@ class User:Serializable  {
     @Column(length=255)
     var note: String? = null
 
-    @ManyToMany
-    @JoinTable(name = "users_roles", joinColumns = [JoinColumn(name = "user_id", referencedColumnName = "id")], inverseJoinColumns = [JoinColumn(name = "role_id", referencedColumnName = "id")])
-    var roles: Collection<Role>? = null
+    @ManyToOne
+    @JoinTable(name = "user_role", joinColumns = [JoinColumn(name = "user_id", referencedColumnName = "id")], inverseJoinColumns = [JoinColumn(name = "role_id", referencedColumnName = "id")])
+    var userRole: Role? = null
 
     @Column(name="last_login", columnDefinition="TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     var lastLoginDate: Date? = null
@@ -64,10 +64,7 @@ class User:Serializable  {
     @Column(name="update_date", columnDefinition="TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     var updateDate: Date? = null
 
-
     constructor()
-
-
 
     constructor(name: String, surname: String, username: String, mail: String, password: String, isActive: Boolean) {
         this.name = name

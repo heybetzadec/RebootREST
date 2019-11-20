@@ -65,10 +65,10 @@ class UserController (@Autowired private val userRepository : UserRepository, pr
         }
         thisUser.password = ""
         thisUser.pin = ""
-        val jwtUser = JwtUser(data[0], thisUser.id ?: 0, thisUser.roles!!.first().name)
+        val jwtUser = JwtUser(data[0], thisUser.id ?: 0, thisUser.userRole?.name ?: "ADMIN")
         val body = Body()
         body.token = jwtGenerator.generate(jwtUser)
-//        body.loginUser = LoginUser(thisUser.id, thisUser.name, thisUser.surname, thisUser.logo, thisUser.roles.)
+        body.loginUser = LoginUser(thisUser.id!!, thisUser.name ?: "", thisUser.surname ?: "", thisUser.username, thisUser.logo ?: "", thisUser.userRole!!)
         response.status = HttpStatus.OK
         response.body = body
         return response

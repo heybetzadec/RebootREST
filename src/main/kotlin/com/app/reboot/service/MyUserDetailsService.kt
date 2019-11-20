@@ -37,30 +37,27 @@ class MyUserDetailsService : UserDetailsService {
         val findUsers = userRepository?.findByMail(email)
                 ?: return org.springframework.security.core.userdetails.User(
                         " ", " ", true, true, true, true,
-                        roleRepository?.findByName("ROLE_USER")?.let { getAuthorities(listOf(it.get())) })
+                        roleRepository?.findByName("ROLE_USER")?.let { getAuthorities(it.get()) })
 
         val user = findUsers.get()
 
         return org.springframework.security.core.userdetails.User(
                 user.mail, user.password, user.isActive ?: true, true, true,
-                true, getAuthorities(user.roles!!))
+                true, user.userRole?.let { getAuthorities(it) })
     }
 
-    private fun getAuthorities(
-            roles: Collection<Role>): Collection<GrantedAuthority> {
+    private fun getAuthorities(role: Role): Collection<GrantedAuthority> {
 
-        return getGrantedAuthorities(getPrivileges(roles))
+        return getGrantedAuthorities(getPrivileges(role))
     }
 
-    private fun getPrivileges(roles: Collection<Role>): List<String> {
+    private fun getPrivileges(role:Role): List<String> {
 
         val privileges = ArrayList<String>()
         val collection = ArrayList<Privilege>()
-        for (role in roles) {
-            collection.addAll(role.privileges!!)
-        }
+        collection.addAll(role.privileges!!)
         for (item in collection) {
-            privileges.add(item.name)
+            item.entity?.let { privileges.add(it) }
         }
         return privileges
     }

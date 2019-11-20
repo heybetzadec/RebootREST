@@ -42,34 +42,57 @@ class InitialDataLoader : ApplicationListener<ContextRefreshedEvent> {
     override fun onApplicationEvent(event: ContextRefreshedEvent) {
         if (alreadySetup)
             return
-        val readPrivilege = createPrivilegeIfNotFound("FULL_PRIVILEGE")
-        val writePrivilege = createPrivilegeIfNotFound("WRITE_PRIVILEGE")
-        val adminPrivileges = mutableListOf(
-                readPrivilege, writePrivilege)
-        createRoleIfNotFound("ROLE_ADMIN", adminPrivileges)
-        createRoleIfNotFound("ROLE_USER", mutableListOf(readPrivilege))
-        val encoded = Function.encoder("blackberryz10")
-        val adminRole = roleRepository!!.findByName("ROLE_ADMIN").get()
-        val user = User("Cavad", "Heybətzadə", "hecaheybet", "heybetzadec@gmail.com", encoded, true)
-        try {
-            userRepository!!.findByMail(user.mail).get()
-        } catch (e: NoSuchElementException) {
-            user.isActive
-            user.roles = listOf(adminRole)
-            userRepository!!.save<User>(user)
+        val categoryPrivlageAdmin = Privilege("category", true, true, true, true)
+        val contentPrivlageAdmin = Privilege("content", true, true, true, true)
+        val privlagePrivlageAdmin = Privilege("privlage", true, true, true, true)
+        val rolePrivlageAdmin = Privilege("role", true, true, true, true)
+        val sliderPrivlageAdmin = Privilege("slider", true, true, true, true)
+        val tagPrivlageAdmin = Privilege("tag", true, true, true, true)
+        val userPrivlageAdmin = Privilege("user", true, true, true, true)
+
+
+        val categoryPrivlageEditor = Privilege("category", true, true, true, false)
+        val contentPrivlageEditor = Privilege("content", true, true, true, true)
+        val privlagePrivlageEditor = Privilege("privlage", false, false, false, false)
+        val rolePrivlageEditor = Privilege("role", false, false, false, false)
+        val sliderPrivlageEditor = Privilege("slider", true, true, true, true)
+        val tagPrivlageEditor = Privilege("tag", true, true, true, true)
+        val userPrivlageEditor = Privilege("user", false, false, false, false)
+
+//        val readPrivilege = createPrivilegeIfNotFound("FULL_PRIVILEGE")
+//        val writePrivilege = createPrivilegeIfNotFound("WRITE_PRIVILEGE")
+        val adminPrivileges = mutableListOf(categoryPrivlageAdmin, contentPrivlageAdmin, privlagePrivlageAdmin, rolePrivlageAdmin, sliderPrivlageAdmin, tagPrivlageAdmin, userPrivlageAdmin)
+        val editorPrivlages = mutableListOf(categoryPrivlageEditor, contentPrivlageEditor, privlagePrivlageEditor, rolePrivlageEditor, sliderPrivlageEditor, tagPrivlageEditor, userPrivlageEditor)
+        if (privilegeRepository!!.count() == 0L) {
+            createPrivilegesIfNotFound(adminPrivileges)
+            createPrivilegesIfNotFound(editorPrivlages)
         }
+        createRoleIfNotFound("ROLE_ADMIN", adminPrivileges)
+        createRoleIfNotFound("ROLE_EDITOR", editorPrivlages)
+
+
+        val adminRole = roleRepository!!.findByName("ROLE_ADMIN").get()
+        val users = mutableListOf<User>(
+                User("Cavad", "Heybətzadə", "hecaheybet", "heybetzadec@gmail.com", Function.encoder("blackberryz10"), true),
+                User("Toğrul", "İbrahimov", "togrul", "togrul@gmail.com", Function.encoder("12345678"), true))
+        users.forEach {
+            try {
+                userRepository!!.findByMail(it.mail).get()
+            } catch (e: NoSuchElementException) {
+                it.isActive
+                it.userRole = adminRole
+                userRepository!!.save<User>(it)
+            }
+        }
+
         createCategoriesIfNotFound()
         alreadySetup = true
     }
 
     @Transactional
-    fun createPrivilegeIfNotFound(name: String): Privilege {
-        return try {
-            privilegeRepository!!.findByName(name).get()
-        } catch (e: NoSuchElementException) {
-            val privilege = Privilege(name)
-            privilegeRepository!!.save(privilege)
-            privilege
+    fun createPrivilegesIfNotFound(privlages: MutableList<Privilege>) {
+        privlages.forEach {
+            privilegeRepository!!.save(it)
         }
     }
 

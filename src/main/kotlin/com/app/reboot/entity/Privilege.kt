@@ -1,11 +1,13 @@
 package com.app.reboot.entity
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import org.hibernate.annotations.Type
+import java.io.Serializable
 import javax.persistence.*
 
 @Entity
 @Table(name = "privilege_tbl")
-class Privilege(var name: String) {
+class Privilege : Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -13,24 +15,35 @@ class Privilege(var name: String) {
 
     var entity:String? = null
 
-    @Column(name = "read", columnDefinition = "TINYINT")
+    @Column(name = "readable", columnDefinition = "TINYINT")
     @Type(type = "org.hibernate.type.NumericBooleanType")
-    var read:Boolean? = null
+    var readable:Boolean? = null
 
-    @Column(name = "add", columnDefinition = "TINYINT")
+    @Column(name = "addable", columnDefinition = "TINYINT")
     @Type(type = "org.hibernate.type.NumericBooleanType")
-    var add:Boolean? = null
+    var addable:Boolean? = null
 
-    @Column(name = "edit", columnDefinition = "TINYINT")
+    @Column(name = "editable", columnDefinition = "TINYINT")
     @Type(type = "org.hibernate.type.NumericBooleanType")
-    var edit:Boolean? = null
+    var editable:Boolean? = null
 
-    @Column(name = "remove", columnDefinition = "TINYINT")
+    @Column(name = "removable", columnDefinition = "TINYINT")
     @Type(type = "org.hibernate.type.NumericBooleanType")
-    var remove:Boolean? = null
+    var removable:Boolean? = null
 
     @ManyToMany(mappedBy = "privileges")
+    @JsonIgnore
     private var roles: Collection<Role>? = null
+
+    constructor()
+
+    constructor(entity: String?, readable: Boolean?, addable: Boolean?, editable: Boolean?, removable: Boolean?) {
+        this.entity = entity
+        this.readable = readable
+        this.addable = addable
+        this.editable = editable
+        this.removable = removable
+    }
 
 
 }

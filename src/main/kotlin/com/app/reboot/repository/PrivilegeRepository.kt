@@ -6,6 +6,4 @@ import org.springframework.stereotype.Repository
 import java.util.*
 
 @Repository
-interface PrivilegeRepository : JpaRepository<Privilege, Long> {
-    fun findByName(name:String): Optional<Privilege>
-}
+interface PrivilegeRepository : JpaRepository<Privilege, Long>
