@@ -81,12 +81,24 @@ class CategoryController (@Autowired private val categoryRepository : CategoryRe
         return Response(HttpStatus.OK,  body)
     }
 
-    @RequestMapping(value = ["categories/get/offset/{offset}/limit/{limit}"], method = [RequestMethod.GET])
+//    private var jwtGenerator: JwtGenerator? = null
+//
+//    fun TokenController(jwtGenerator: JwtGenerator?) {
+//        this.jwtGenerator = jwtGenerator
+//    }
+//
+//    @PostMapping
+//    fun generate(@RequestBody jwtUser: JwtUser?): String? {
+//        return jwtGenerator.generate(jwtUser)
+//    }
+
+
+    @RequestMapping(value = ["secure/categories/get/offset/{offset}/limit/{limit}"], method = [RequestMethod.GET])
     @Throws(Exception::class)
     fun getCategories(@PathVariable offset :Int, @PathVariable limit: Int): Response{
         val response = Response()
         val categoryNodes = em.createQuery(
-                "select NEW com.app.reboot.help.CategoryNode(id, name, title, link, visible, parentCategory.id) " +
+                "select NEW com.app.reboot.response.CategoryNode(id, name, title, link, visible, parentCategory.id) " +
                         "from Category c order by id desc", CategoryNode::class.java)
 //                .setParameter("parentCategoryId", 1L)
                 .resultList

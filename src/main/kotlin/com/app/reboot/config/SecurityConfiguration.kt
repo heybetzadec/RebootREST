@@ -25,11 +25,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 @Configuration
 class SecurityConfiguration : WebSecurityConfigurerAdapter() {
 
-//    @Throws(Exception::class)
-//    override fun configure(httpSecurity: HttpSecurity) {
-//        httpSecurity.csrf().disable().cors().and().authorizeRequests().antMatchers("/").permitAll().anyRequest().authenticated().and().httpBasic()
-//    }
-
     @Autowired
     private val authenticationProvider: JwtAuthenticationProvider? = null
     @Autowired

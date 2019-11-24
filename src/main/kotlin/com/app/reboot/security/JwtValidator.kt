@@ -9,10 +9,7 @@ import org.springframework.stereotype.Component
 class JwtValidator {
 
 
-//    private val secret = "youtube"
-
     fun validate(token: String): JwtUser? {
-
         var jwtUser: JwtUser? = null
         try {
             val body:Claims = Jwts.parser()
@@ -20,14 +17,12 @@ class JwtValidator {
                     .parseClaimsJws(token)
                     .body
             jwtUser = JwtUser()
-
             jwtUser.username = body.getSubject()
             jwtUser.id = java.lang.Long.parseLong(body["userId"] as String)
             jwtUser.role = (body.get("role") as String)
         } catch (e: Exception) {
             println(e)
         }
-
         return jwtUser
     }
 }
