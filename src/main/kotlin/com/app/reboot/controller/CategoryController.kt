@@ -26,7 +26,7 @@ class CategoryController (@Autowired private val categoryRepository : CategoryRe
         return "Hello HeCa"
     }
 
-    @RequestMapping(value = ["/category/get/model"], method = [RequestMethod.GET])
+    @RequestMapping(value = ["/secure/category/get/model"], method = [RequestMethod.GET])
     @Throws(Exception::class)
     fun getModel(): Category {
         return Category(
@@ -42,7 +42,7 @@ class CategoryController (@Autowired private val categoryRepository : CategoryRe
         )
     }
 
-    @RequestMapping(value = ["/category/get/id/{id}"], method = [RequestMethod.GET])
+    @RequestMapping(value = ["/secure/category/get/id/{id}"], method = [RequestMethod.GET])
     @Throws(Exception::class)
     fun getCategory(@PathVariable id :Long): Response {
         val response = Response()
@@ -61,39 +61,7 @@ class CategoryController (@Autowired private val categoryRepository : CategoryRe
         return  response
     }
 
-    @RequestMapping(method = [RequestMethod.GET], path = ["/categories/load"])
-    fun loadDefault(): Response {
-        val categories = mutableListOf<Category>()
-        categories.add(Category("Elm","Ən son Elm və Texnologiya Xəbərləri","elm",true,"Elm və texnologiya dünyasının ən son xəbərləri ilə innovativ texnoloji elm xəbərlərindən agah olun!",""))
-        categories.add(Category("Cihazlar","Kompüter və mobil cihaz xəbərləri","cihazlar",true,"Elm və texnologiya dünyasının ən son xəbərləri ilə innovativ texnoloji elm xəbərlərindən agah olun!",""))
-        categories.add(Category("Geyilən","Geyilən Texnologiya Xəbərləri və mobil cihaz xəbərləri","geyilen",true,"Elm və texnologiya dünyasının ən son xəbərləri ilə innovativ texnoloji elm xəbərlərindən agah olun!",""))
-        categories.add(Category("İnternet","İnternet Xəbərləri","internet",true,"Elm və texnologiya dünyasının ən son xəbərləri ilə innovativ texnoloji elm xəbərlərindən agah olun!",""))
-        categories.add(Category("Kompaniya","Kampaniya Xəbərləri","kompaniya",true,"Elm və texnologiya dünyasının ən son xəbərləri ilə innovativ texnoloji elm xəbərlərindən agah olun!",""))
-        categories.add(Category("Kripto valyuta","Kripto valyuta","kripto",true,"&lt;p&gt;Uzunca bir s&amp;uuml;redir var olsa da Bitcoin&amp;#39;in pop&amp;uuml",""))
-        categories.add(Category("Mobil","Mobil Telefon və Tablet Xəbərləri","tablet",true,"Elm və texnologiya dünyasının ən son xəbərləri ilə innovativ texnoloji elm xəbərlərindən agah olun!",""))
-        categories.add(Category("Mobil Tətbiq","Mobil Tətbiq","mobil_tetbiq",true,"Elm və texnologiya dünyasının ən son xəbərləri ilə innovativ texnoloji elm xəbərlərindən agah olun!",""))
-        categories.add(Category("Avtomobil","Avtomobil","avtomobil",true,"Elm və texnologiya dünyasının ən son xəbərləri ilə innovativ texnoloji elm xəbərlərindən agah olun!",""))
-        categories.forEach {
-            categoryRepository.save(it)
-        }
-        val body = Body()
-        body.categories = categories
-        return Response(HttpStatus.OK,  body)
-    }
-
-//    private var jwtGenerator: JwtGenerator? = null
-//
-//    fun TokenController(jwtGenerator: JwtGenerator?) {
-//        this.jwtGenerator = jwtGenerator
-//    }
-//
-//    @PostMapping
-//    fun generate(@RequestBody jwtUser: JwtUser?): String? {
-//        return jwtGenerator.generate(jwtUser)
-//    }
-
-
-    @RequestMapping(value = ["secure/categories/get/offset/{offset}/limit/{limit}"], method = [RequestMethod.GET])
+    @RequestMapping(value = ["/secure/categories/get/offset/{offset}/limit/{limit}"], method = [RequestMethod.GET])
     @Throws(Exception::class)
     fun getCategories(@PathVariable offset :Int, @PathVariable limit: Int): Response{
         val response = Response()
@@ -102,7 +70,7 @@ class CategoryController (@Autowired private val categoryRepository : CategoryRe
                         "from Category c order by id desc", CategoryNode::class.java)
 //                .setParameter("parentCategoryId", 1L)
                 .resultList
-
+        println("=== forEachIndexed")
         if (categoryNodes.size > 0) {
             val body = Body()
             categoryNodes.forEachIndexed { index, categoryNode ->
@@ -122,11 +90,12 @@ class CategoryController (@Autowired private val categoryRepository : CategoryRe
             val error = Problem(404,"Məlumat yoxdur!","Not found contents!")
             response.problem = error
             response.status = HttpStatus.NOT_ACCEPTABLE
+            println("===HttpStatus.Error")
         }
         return  response
     }
 
-    @RequestMapping(value = ["categories/get/select"], method = [RequestMethod.GET])
+    @RequestMapping(value = ["/secure/categories/get/select"], method = [RequestMethod.GET])
     @Throws(Exception::class)
     fun getCategoriesForSelect(): Response{
         val response = Response()
@@ -153,7 +122,7 @@ class CategoryController (@Autowired private val categoryRepository : CategoryRe
     }
 
 
-    @RequestMapping(value = ["/category/save"], method = [RequestMethod.POST])
+    @RequestMapping(value = ["/secure/category/save"], method = [RequestMethod.POST])
     @Throws(Exception::class)
     fun saveCategory(@RequestBody category :Category): Response {
         val response = Response()
@@ -205,7 +174,7 @@ class CategoryController (@Autowired private val categoryRepository : CategoryRe
     }
 
 
-    @RequestMapping(value = ["/category/remove"], method = [RequestMethod.DELETE])
+    @RequestMapping(value = ["/secure/category/remove"], method = [RequestMethod.DELETE])
     fun removeUser(@RequestBody category :Category): Response {
         val response = Response()
         if (categoryRepository.existsById(category.id ?: 0)){
@@ -220,7 +189,7 @@ class CategoryController (@Autowired private val categoryRepository : CategoryRe
         return response
     }
 
-    @RequestMapping(value = ["/category/remove/id/{id}"], method = [RequestMethod.DELETE])
+    @RequestMapping(value = ["/secure/category/remove/id/{id}"], method = [RequestMethod.DELETE])
     fun removeUser(@PathVariable id:Long): Response {
         val response = Response()
         if (categoryRepository.existsById(id)){

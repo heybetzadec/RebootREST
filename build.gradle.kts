@@ -23,6 +23,7 @@ repositories {
 	mavenCentral()
 }
 
+
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-data-rest")
@@ -30,6 +31,7 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-web")
 //	implementation("org.mariadb.jdbc:mariadb-java-client")
 	implementation("mysql:mysql-connector-java")
+	implementation("io.jsonwebtoken:jjwt:0.2")
 	implementation("javax.xml.bind:jaxb-api:2.3.0")
 	implementation("org.hibernate:hibernate-core:5.4.5.Final")
 	implementation("org.hibernate:hibernate-entitymanager:4.1.7.Final")

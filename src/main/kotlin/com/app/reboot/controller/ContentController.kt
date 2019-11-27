@@ -27,7 +27,7 @@ class ContentController(@Autowired private val contentRepository : ContentReposi
     @Autowired
     private lateinit var storageService: StorageService
 
-    @RequestMapping(value = ["/content/upload/img"], method = [RequestMethod.POST], consumes = ["multipart/form-data"])
+    @RequestMapping(value = ["secure/content/upload/img"], method = [RequestMethod.POST], consumes = ["multipart/form-data"])
     fun upload(@RequestParam file: MultipartFile, @RequestParam oldImage: String) {
         try {
             storageService.uploadImageWithThumbnail(file)
@@ -41,7 +41,7 @@ class ContentController(@Autowired private val contentRepository : ContentReposi
 
     }
 
-    @RequestMapping(value = ["/content/remove/image/name/{name}"], method = [RequestMethod.GET])
+    @RequestMapping(value = ["secure/content/remove/image/name/{name}"], method = [RequestMethod.GET])
     @Throws(Exception::class)
     fun removeFile(@PathVariable name:String): Response {
         val response = Response()
@@ -79,7 +79,7 @@ class ContentController(@Autowired private val contentRepository : ContentReposi
         return response
     }
 
-    @RequestMapping(value = ["/content/get/model"], method = [RequestMethod.GET])
+    @RequestMapping(value = ["secure/content/get/model"], method = [RequestMethod.GET])
     @Throws(Exception::class)
     fun getModel(): Content {
         return Content(
@@ -89,7 +89,7 @@ class ContentController(@Autowired private val contentRepository : ContentReposi
         )
     }
 
-    @RequestMapping(value = ["/content/get/id/{id}"], method = [RequestMethod.GET])
+    @RequestMapping(value = ["secure/content/get/id/{id}"], method = [RequestMethod.GET])
     @Throws(Exception::class)
     fun getContent(@PathVariable id :Long): Response {
         val response = Response()
@@ -108,7 +108,7 @@ class ContentController(@Autowired private val contentRepository : ContentReposi
         return  response
     }
 
-    @RequestMapping(value = ["/contents/get/offset/{offset}/limit/{limit}"], method = [RequestMethod.GET])
+    @RequestMapping(value = ["secure/contents/get/offset/{offset}/limit/{limit}"], method = [RequestMethod.GET])
     @Throws(Exception::class)
     fun getContents(@PathVariable offset :Int, @PathVariable limit: Int): Response {
         val response = Response()
@@ -157,7 +157,7 @@ class ContentController(@Autowired private val contentRepository : ContentReposi
         return  response
     }
 
-    @RequestMapping(value = ["/content/save"], method = [RequestMethod.POST])
+    @RequestMapping(value = ["secure/content/save"], method = [RequestMethod.POST])
     @Throws(Exception::class)
     fun addContent(@RequestBody content : Content): Response {
         val response = Response()
@@ -223,7 +223,7 @@ class ContentController(@Autowired private val contentRepository : ContentReposi
         return response
     }
 
-    @RequestMapping(value = ["/content/remove"], method = [RequestMethod.DELETE])
+    @RequestMapping(value = ["secure/content/remove"], method = [RequestMethod.DELETE])
     fun removeContent(@RequestBody content : Content): Response {
         val response = Response()
         if (contentRepository.existsById(content.id ?: 0)){
@@ -240,7 +240,7 @@ class ContentController(@Autowired private val contentRepository : ContentReposi
 
 //    @RequestMapping(value = ["/content/remove/id/{id}"], method = [RequestMethod.GET])
 //    fun removeContent(@PathVariable id:Long): Response {
-    @RequestMapping(value = ["/content/remove/id/{id}"], method = [RequestMethod.GET])
+    @RequestMapping(value = ["secure/content/remove/id/{id}"], method = [RequestMethod.GET])
     @Throws(Exception::class)
     fun removeContent(@PathVariable id :Long): Response {
         val response = Response()

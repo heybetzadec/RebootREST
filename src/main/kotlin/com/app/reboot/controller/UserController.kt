@@ -42,8 +42,6 @@ class UserController (@Autowired private val userRepository : UserRepository, pr
         val btoa = authorizationHeader.replace("Basic ","")
         val str = Function.aotb(btoa)
         val data = str.split(":")
-        println("user = ${data[0]}")
-        println("password = ${Function.encoder(data[1])}")
         val user = User(data[0], data[0], Function.encoder(data[1]))
         val matcher1 = ExampleMatcher.matching().withMatcher("mail", ExampleMatcher.GenericPropertyMatchers.startsWith())
                 .withMatcher("password", ExampleMatcher.GenericPropertyMatchers.startsWith()).withIgnorePaths("username").withIgnoreCase()

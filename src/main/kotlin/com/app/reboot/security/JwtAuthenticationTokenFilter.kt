@@ -7,6 +7,8 @@ import org.springframework.security.web.authentication.AbstractAuthenticationPro
 import java.io.IOException
 import javax.servlet.FilterChain
 import javax.servlet.ServletException
+import javax.servlet.ServletRequest
+import javax.servlet.ServletResponse
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
@@ -18,6 +20,7 @@ class JwtAuthenticationTokenFilter : AbstractAuthenticationProcessingFilter("/se
 
         val header = httpServletRequest.getHeader("Authorisation")
 
+        println("header = $header")
 
         if (header == null || !header.startsWith("Token ")) {
             throw RuntimeException("JWT Token is missing")
@@ -35,4 +38,18 @@ class JwtAuthenticationTokenFilter : AbstractAuthenticationProcessingFilter("/se
         super.successfulAuthentication(request, response, chain, authResult)
         chain!!.doFilter(request, response)
     }
+
+//    override fun doFilter(req: ServletRequest?, res: ServletResponse?, chain: FilterChain?) {
+////        super.doFilter(req, res, chain)
+//        val response = res as HttpServletResponse
+//        val request = req as HttpServletRequest?
+//
+//        println("===Authorisation = ${response.getHeader("Authorisation")}")
+//        response.setHeader("Access-Control-Allow-Origin", "*")
+//        response.setHeader("Access-Control-Allow-Methods", "GET,POST,DELETE,PUT,OPTIONS")
+//        response.setHeader("Access-Control-Allow-Headers", "*")
+//        response.setHeader("Access-Control-Allow-Credentials", "true")
+//        response.setHeader("Access-Control-Max-Age", "180")
+//        chain?.doFilter(req, res)
+//    }
 }
