@@ -46,31 +46,21 @@ class SecurityConfiguration : WebSecurityConfigurerAdapter() {
     }
 
 
-//    @Throws(Exception::class)
-//    override fun configure(http: HttpSecurity) {
-//
-//        http.csrf().disable()
-//                .authorizeRequests().antMatchers("**/secure/**").authenticated()
-//                .and()
-//                .exceptionHandling().authenticationEntryPoint(entryPoint)
-//                .and()
-//                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-//
-//        http.addFilterBefore(authenticationTokenFilter(), UsernamePasswordAuthenticationFilter::class.java)
-//        http.headers().cacheControl()
-//    }
-
     @Throws(Exception::class)
     override fun configure(http: HttpSecurity) {
-        http.addFilterBefore(authenticationTokenFilter(), UsernamePasswordAuthenticationFilter::class.java)
+        println("configure uuuu")
+        http.csrf().disable()
                 .cors().and()
-                .exceptionHandling().authenticationEntryPoint(entryPoint).and()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-                .csrf().disable()
-                .antMatcher("**/secure/**").authorizeRequests()
-                .antMatchers(HttpMethod.OPTIONS, "/use/**").permitAll() // this
-                .anyRequest().authenticated()
+                .authorizeRequests().antMatchers(HttpMethod.OPTIONS,"**/secure/**").authenticated()
+                .and()
+                .exceptionHandling().authenticationEntryPoint(entryPoint)
+                .and()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+
+        http.addFilterBefore(authenticationTokenFilter(), UsernamePasswordAuthenticationFilter::class.java)
+        http.headers().cacheControl()
     }
+
 
     @Bean
     fun corsConfigurationSource(): CorsConfigurationSource {

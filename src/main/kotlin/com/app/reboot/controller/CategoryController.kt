@@ -16,6 +16,10 @@ import javax.persistence.PersistenceContext
 
 
 @RestController
+//@CrossOrigin(allowCredentials = "true",
+//        methods = [RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.OPTIONS, RequestMethod.DELETE],
+//        allowedHeaders = ["x-requested-with", "accept", "Authorisation", "content-type"],
+//        exposedHeaders = ["access-control-allow-headers", "Authorisation", "access-control-allow-methods", "access-control-allow-origin", "access-control-max-age", "X-Frame-Options"])
 class CategoryController (@Autowired private val categoryRepository : CategoryRepository) {
     @PersistenceContext
     lateinit var em: EntityManager
@@ -29,17 +33,7 @@ class CategoryController (@Autowired private val categoryRepository : CategoryRe
     @RequestMapping(value = ["/secure/category/get/model"], method = [RequestMethod.GET])
     @Throws(Exception::class)
     fun getModel(): Category {
-        return Category(
-                null,
-                "",
-                "",
-                "",
-                "",
-                "",
-                true,
-                Date(),
-                Date()
-        )
+        return Category(null, "", "", "", "", "", true, Date(),  Date())
     }
 
     @RequestMapping(value = ["/secure/category/get/id/{id}"], method = [RequestMethod.GET])
