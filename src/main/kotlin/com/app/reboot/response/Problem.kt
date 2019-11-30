@@ -19,5 +19,6 @@ class Problem {
 //400 - BAD REQUEST
 //201 - CREATED
 //401 - UNAUTHORIZED
+//405 - Method Not Allowed
 //415 - UNSUPPORTED TYPE - Representation not supported for the resource
 //500 - SERVER ERROR

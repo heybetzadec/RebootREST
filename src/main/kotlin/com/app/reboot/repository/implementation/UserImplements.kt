@@ -11,15 +11,6 @@ class UserImplements :UserRepository{
 //    lateinit var em: EntityManager
 
     override fun findByMail(mail: String): Optional<User> {
-//        val cb = em.criteriaBuilder
-//        val cq = cb.createQuery(User::class.java)
-//        val root = cq.from(User::class.java)
-//        cq.select(root)
-//        cq.where(
-//                cb.equal(root.get<String>("mail"), mail)
-//        )
-//        val query = em.createQuery<User>(cq)
-//        return query.resultList
         val user = User(mail)
         val matcher = ExampleMatcher.matching().withMatcher("mail", ExampleMatcher.GenericPropertyMatchers.startsWith())
         val example = Example.of<User>(user, matcher)

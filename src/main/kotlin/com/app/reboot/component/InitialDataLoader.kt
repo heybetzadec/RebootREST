@@ -121,9 +121,10 @@ class InitialDataLoader : ApplicationListener<ContextRefreshedEvent> {
         categories.add(Category("Avtomobil","Avtomobil","avtomobil",true,"Elm və texnologiya dünyasının ən son xəbərləri ilə innovativ texnoloji elm xəbərlərindən agah olun!",""))
         val matcher = ExampleMatcher.matching().withMatcher("name", ExampleMatcher.GenericPropertyMatchers.startsWith())
         categories.forEach {
-            val example = Example.of<Category>(it, matcher)
-            if (!categoryRepository!!.exists(example)){
-                categoryRepository.save(it)
+            try {
+                categoryRepository!!.findByLink(it.link).get()
+            } catch (e: NoSuchElementException) {
+                categoryRepository!!.save(it)
             }
         }
     }

@@ -36,7 +36,7 @@ class ContentController(@Autowired private val contentRepository : ContentReposi
                 storageService.removeFile("th_$oldImage")
             }
         } catch (e: StorageException){
-            println("problem upload file: ${e.message}}")
+            println("Problem upload file: ${e.message}}")
         }
 
     }

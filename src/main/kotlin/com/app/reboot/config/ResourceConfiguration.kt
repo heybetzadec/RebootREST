@@ -8,15 +8,14 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 
 @Configuration
 @EnableWebMvc
-class AdditionalResourceWebConfiguration: WebMvcConfigurer {
+class ResourceConfiguration: WebMvcConfigurer {
 
     override fun addResourceHandlers(registry: ResourceHandlerRegistry) {
         registry.addResourceHandler("/media/**").addResourceLocations("file:media/")
     }
 
     override fun addCorsMappings(registry: CorsRegistry) {
-        println("addCorsMappings uuuu")
-        registry.addMapping("/**").allowedOrigins("http://localhost:8080").allowedMethods("GET", "POST", "PUT", "DELETE", "HEAD").allowCredentials(true)
+        registry.addMapping("/**").allowedOrigins("http://localhost:8080").allowedMethods("GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS").allowCredentials(true)
     }
 
 }

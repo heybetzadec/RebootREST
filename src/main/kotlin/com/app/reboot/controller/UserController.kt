@@ -50,7 +50,6 @@ class UserController (@Autowired private val userRepository : UserRepository, pr
         val example1 = Example.of<User>(user, matcher1)
         val example2 = Example.of<User>(user, matcher2)
         val thisUser:User
-        println("===${userRepository.exists(example2)}")
         when {
             userRepository.exists(example1) -> thisUser = userRepository.findOne(example1).get()
             userRepository.exists(example2) -> thisUser = userRepository.findOne(example2).get()

@@ -16,27 +16,17 @@ import javax.persistence.PersistenceContext
 
 
 @RestController
-//@CrossOrigin(allowCredentials = "true",
-//        methods = [RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.OPTIONS, RequestMethod.DELETE],
-//        allowedHeaders = ["x-requested-with", "accept", "Authorisation", "content-type"],
-//        exposedHeaders = ["access-control-allow-headers", "Authorisation", "access-control-allow-methods", "access-control-allow-origin", "access-control-max-age", "X-Frame-Options"])
 class CategoryController (@Autowired private val categoryRepository : CategoryRepository) {
     @PersistenceContext
     lateinit var em: EntityManager
 
-    @RequestMapping(value = ["/secure/get/hello"], method = [RequestMethod.GET])
-    @Throws(Exception::class)
-    fun getHello(): String {
-        return "Hello HeCa"
-    }
-
-    @RequestMapping(value = ["/secure/category/get/model"], method = [RequestMethod.GET])
+    @RequestMapping(value = ["/category/get/model"], method = [RequestMethod.GET])
     @Throws(Exception::class)
     fun getModel(): Category {
         return Category(null, "", "", "", "", "", true, Date(),  Date())
     }
 
-    @RequestMapping(value = ["/secure/category/get/id/{id}"], method = [RequestMethod.GET])
+    @RequestMapping(value = ["/category/get/id/{id}"], method = [RequestMethod.GET])
     @Throws(Exception::class)
     fun getCategory(@PathVariable id :Long): Response {
         val response = Response()
@@ -55,16 +45,14 @@ class CategoryController (@Autowired private val categoryRepository : CategoryRe
         return  response
     }
 
-    @RequestMapping(value = ["/secure/categories/get/offset/{offset}/limit/{limit}"], method = [RequestMethod.GET])
+    @RequestMapping(value = ["/categories"], method = [RequestMethod.GET])
     @Throws(Exception::class)
-    fun getCategories(@PathVariable offset :Int, @PathVariable limit: Int): Response{
+    fun getCategories(): Response{
         val response = Response()
         val categoryNodes = em.createQuery(
                 "select NEW com.app.reboot.response.CategoryNode(id, name, title, link, visible, parentCategory.id) " +
                         "from Category c order by id desc", CategoryNode::class.java)
-//                .setParameter("parentCategoryId", 1L)
                 .resultList
-        println("=== forEachIndexed")
         if (categoryNodes.size > 0) {
             val body = Body()
             categoryNodes.forEachIndexed { index, categoryNode ->
@@ -84,24 +72,29 @@ class CategoryController (@Autowired private val categoryRepository : CategoryRe
             val error = Problem(404,"Məlumat yoxdur!","Not found contents!")
             response.problem = error
             response.status = HttpStatus.NOT_ACCEPTABLE
-            println("===HttpStatus.Error")
         }
         return  response
     }
 
-    @RequestMapping(value = ["/secure/categories/get/select"], method = [RequestMethod.GET])
+    @RequestMapping(value = ["/categories/get/select/id/{id}"], method = [RequestMethod.GET])
     @Throws(Exception::class)
-    fun getCategoriesForSelect(): Response{
+    fun getCategoriesForSelect(@PathVariable id :Long): Response{
         val response = Response()
-        val cb = em.criteriaBuilder
-        val cq = cb.createQuery(Category::class.java)
-        val root = cq.from(Category::class.java)
-//        cq.select(root)
-        val orderList = listOf(cb.desc(root.get<Long>("id")))
-        cq.orderBy(orderList)
-        val query = em.createQuery<Category>(cq)
-        val categories: MutableList<Category>
-        categories = query.resultList
+//        val cb = em.criteriaBuilder
+//        val cq = cb.createQuery(Category::class.java)
+//        val root = cq.from(Category::class.java)
+////        cq.select
+//        cq.where(
+//                cb.notEqual(root.get<Long>("id"), id)
+//        )
+//        val orderList = listOf(cb.desc(root.get<Long>("id")))
+//        cq.orderBy(orderList)
+//        val query = em.createQuery<Category>(cq)
+//        val categories: MutableList<Category>
+        val categories: MutableList<Category> = em.createQuery(
+                "select c " +
+                        "from Category c WHERE c.id != :id  order by id desc", Category::class.java).setParameter("id", id).resultList
+//        categories = query.resultList
         if (categories.size > 0) {
             val body = Body()
             response.body = body
@@ -112,7 +105,7 @@ class CategoryController (@Autowired private val categoryRepository : CategoryRe
             response.problem = error
             response.status = HttpStatus.NOT_ACCEPTABLE
         }
-        return  response
+        return response
     }
 
 
@@ -168,32 +161,51 @@ class CategoryController (@Autowired private val categoryRepository : CategoryRe
     }
 
 
-    @RequestMapping(value = ["/secure/category/remove"], method = [RequestMethod.DELETE])
-    fun removeUser(@RequestBody category :Category): Response {
-        val response = Response()
-        if (categoryRepository.existsById(category.id ?: 0)){
-            categoryRepository.delete(category)
-            response.status = HttpStatus.OK
-            response.body = Body()
-            response.body?.category = category
-        } else {
-            response.status = HttpStatus.NOT_FOUND
-            response.problem = Problem(404, "${category.name} kateqoriyası yoxdur.","Not found user")
-        }
-        return response
-    }
+//    @RequestMapping(value = ["/secure/category/remove"], method = [RequestMethod.GET])
+//    fun removeCategory(@RequestBody category :Category): Response {
+//        val response = Response()
+//        if (categoryRepository.existsById(category.id ?: 0)){
+//            categoryRepository.delete(category)
+//            response.status = HttpStatus.OK
+//            response.body = Body()
+//            response.body?.category = category
+//        } else {
+//            response.status = HttpStatus.NOT_FOUND
+//            response.problem = Problem(404, "${category.name} kateqoriyası yoxdur.","Not found user")
+//        }
+//        return response
+//    }
 
-    @RequestMapping(value = ["/secure/category/remove/id/{id}"], method = [RequestMethod.DELETE])
-    fun removeUser(@PathVariable id:Long): Response {
+    @RequestMapping(value = ["/secure/category/remove/id/{id}"], method = [RequestMethod.GET])
+    fun removeCategory(@PathVariable id:Long): Response {
         val response = Response()
         if (categoryRepository.existsById(id)){
             response.status = HttpStatus.OK
-            response.body = Body()
-            response.body?.category = categoryRepository.findById(id).get()
             categoryRepository.deleteById(id)
+            val categoryNodes = em.createQuery(
+                    "select NEW com.app.reboot.response.CategoryNode(id, name, title, link, visible, parentCategory.id) " +
+                            "from Category c order by id desc", CategoryNode::class.java)
+                    .resultList
+            if (categoryNodes.size > 0) {
+                val body = Body()
+                categoryNodes.forEachIndexed { index, categoryNode ->
+                    if (categoryNode.parentCategoryId != null) {
+                        val parentCategory = categoryNodes.findLast { s -> s.data?.id == categoryNode.parentCategoryId }
+                        if (parentCategory?.children == null) {
+                            parentCategory?.children = mutableListOf()
+                        }
+                        parentCategory?.children?.add(categoryNodes[index])
+                    }
+                }
+                categoryNodes.removeAll { it.parentCategoryId !== null }
+                body.categoryNodes = categoryNodes
+                response.body = body
+                response.status = HttpStatus.OK
+            }
         } else {
             response.status = HttpStatus.NOT_FOUND
             response.problem = Problem(404, "Silinməsi istənilən katiqoriyya yoxdur","Not found category")
+            return response
         }
         return response
     }

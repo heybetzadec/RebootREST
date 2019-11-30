@@ -35,7 +35,6 @@ class SliderController(@Autowired private val sliderRepository : SliderRepositor
 
     @RequestMapping(value = ["/slider/upload/img"], method = [RequestMethod.POST], consumes = ["multipart/form-data"])
     fun upload(@RequestParam file: MultipartFile, @RequestParam oldImage: String, @RequestParam type: Int, @RequestParam id: Long): Response {
-        println("isledi bura")
         val response = Response()
         try {
             val result =  contentRepository.findById(id)

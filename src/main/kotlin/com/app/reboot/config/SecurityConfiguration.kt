@@ -7,7 +7,6 @@ import com.app.reboot.security.JwtSuccessHandler
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.http.HttpMethod
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.AuthenticationProvider
 import org.springframework.security.authentication.ProviderManager
@@ -45,22 +44,15 @@ class SecurityConfiguration : WebSecurityConfigurerAdapter() {
         return filter
     }
 
-
     @Throws(Exception::class)
     override fun configure(http: HttpSecurity) {
-        println("configure uuuu")
-        http.csrf().disable()
-                .cors().and()
-                .authorizeRequests().antMatchers(HttpMethod.OPTIONS,"**/secure/**").authenticated()
-                .and()
-                .exceptionHandling().authenticationEntryPoint(entryPoint)
-                .and()
+        http.csrf().disable().cors().and()
+                .authorizeRequests().antMatchers("**/secure/**").authenticated().and()
+                .exceptionHandling().authenticationEntryPoint(entryPoint).and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-
         http.addFilterBefore(authenticationTokenFilter(), UsernamePasswordAuthenticationFilter::class.java)
         http.headers().cacheControl()
     }
-
 
     @Bean
     fun corsConfigurationSource(): CorsConfigurationSource {

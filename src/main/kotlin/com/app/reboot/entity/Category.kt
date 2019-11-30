@@ -16,19 +16,19 @@ class Category: Serializable {
     var id: Long? = null
 
     @Column(length=255)
-    var name: String = ""
+    var name: String? = null
 
     @Column(length=255)
-    var title: String = ""
+    var title: String? = null
 
     @Column(length=255)
     var link: String = ""
 
     @Column(length = 255)
-    var description: String = ""
+    var description: String? = null
 
     @Column(length = 255)
-    var keyword: String = ""
+    var keyword: String? = null
 
     var visible: Boolean = true
 
@@ -40,11 +40,11 @@ class Category: Serializable {
 
     @Column(name="create_date", columnDefinition="TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
-    var createDate: Date = Date()
+    var createDate: Date? = null
 
     @Column(name="update_date", columnDefinition="TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
-    var updateDate: Date = Date()
+    var updateDate: Date? = null
 
     @Transient
     var parentId: Long? = null
@@ -56,6 +56,8 @@ class Category: Serializable {
     var parentLink: String? = null
 
     constructor()
+
+
 
     constructor(name: String, visible:Boolean) {
         this.name = name
@@ -111,6 +113,10 @@ class Category: Serializable {
         this.parentId = parentId
         this.parentName = parentName
         this.parentLink = parentLink
+    }
+
+    constructor(link: String) {
+        this.link = link
     }
 
 
