@@ -39,7 +39,7 @@ class Content :Serializable{
 //    @JsonIgnore
     var categories: MutableList<Category>? = null
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
 //    @JsonIgnore
     var tags: MutableList<Tag>? = null
 

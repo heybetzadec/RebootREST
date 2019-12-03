@@ -10,7 +10,7 @@ class CategoryImplements :CategoryRepository{
 
     override fun findByLink(link: String): Optional<Category> {
         val category = Category(link)
-        val matcher = ExampleMatcher.matching().withMatcher("mail", ExampleMatcher.GenericPropertyMatchers.startsWith())
+        val matcher = ExampleMatcher.matching().withMatcher("link", ExampleMatcher.GenericPropertyMatchers.startsWith())
         val example = Example.of<Category>(category, matcher)
         return findOne(example)
     }

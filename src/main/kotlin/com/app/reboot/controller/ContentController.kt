@@ -1,6 +1,7 @@
 package com.app.reboot.controller
 
 import com.app.reboot.entity.Content
+import com.app.reboot.entity.Tag
 import com.app.reboot.exception.StorageException
 import com.app.reboot.repository.ContentRepository
 import com.app.reboot.repository.TagRepository
@@ -10,6 +11,8 @@ import com.app.reboot.response.Response
 import com.app.reboot.service.StorageService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.dao.DataIntegrityViolationException
+import org.springframework.data.domain.Example
+import org.springframework.data.domain.ExampleMatcher
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
@@ -38,7 +41,6 @@ class ContentController(@Autowired private val contentRepository : ContentReposi
         } catch (e: StorageException){
             println("Problem upload file: ${e.message}}")
         }
-
     }
 
     @RequestMapping(value = ["secure/content/remove/image/name/{name}"], method = [RequestMethod.GET])
@@ -61,35 +63,13 @@ class ContentController(@Autowired private val contentRepository : ContentReposi
         println("handleStorageFileNotFound: ${e.message}")
     }
 
-    @RequestMapping(value = ["/loadcontent"], method = [RequestMethod.GET])
-    @Throws(Exception::class)
-    fun loadContent(): Response {
-        val response = Response()
-
-        val content = Content(
-                1, "Ilk meqale", "ilk_meqale", "embeed",
-                "description", "keyword", "content yazi burdaa",
-                "", 1, 2, true, 0, Date(), Date()
-        )
-        val body = Body()
-        body.content = content
-        response.body = body
-        response.status = HttpStatus.OK
-
-        return response
-    }
-
-    @RequestMapping(value = ["secure/content/get/model"], method = [RequestMethod.GET])
+    @RequestMapping(value = ["content/get/model"], method = [RequestMethod.GET])
     @Throws(Exception::class)
     fun getModel(): Content {
-        return Content(
-                null, "", "", "",
-                "", "", "",
-                "", 1, 2, true, 0, Date(), Date()
-        )
+        return Content(null, "", "", "","", "", "","", 1, 2, true, 0, Date(), Date())
     }
 
-    @RequestMapping(value = ["secure/content/get/id/{id}"], method = [RequestMethod.GET])
+    @RequestMapping(value = ["content/get/id/{id}"], method = [RequestMethod.GET])
     @Throws(Exception::class)
     fun getContent(@PathVariable id :Long): Response {
         val response = Response()
@@ -108,7 +88,7 @@ class ContentController(@Autowired private val contentRepository : ContentReposi
         return  response
     }
 
-    @RequestMapping(value = ["secure/contents/get/offset/{offset}/limit/{limit}"], method = [RequestMethod.GET])
+    @RequestMapping(value = ["contents/get/offset/{offset}/limit/{limit}"], method = [RequestMethod.GET])
     @Throws(Exception::class)
     fun getContents(@PathVariable offset :Int, @PathVariable limit: Int): Response {
         val response = Response()
@@ -134,6 +114,7 @@ class ContentController(@Autowired private val contentRepository : ContentReposi
 //        cq.where(
 //                cb.equal(root.get<Long>("mail"), "heybetzadec@gmail.com")
 //        )
+
         val orderList = listOf(cb.desc(root.get<Long>("id")))
         cq.orderBy(orderList)
         val query = em.createQuery<Content>(cq)
@@ -161,7 +142,6 @@ class ContentController(@Autowired private val contentRepository : ContentReposi
     @Throws(Exception::class)
     fun addContent(@RequestBody content : Content): Response {
         val response = Response()
-
         var linkUnique = false
         var isNew = false
         if (content.id == null){
@@ -179,14 +159,12 @@ class ContentController(@Autowired private val contentRepository : ContentReposi
         }
 
         try {
-            content.tags?.forEach {
-                try {
-                    tagRepository.save(it)
-                }catch (e:DataIntegrityViolationException){
-                    println("${it.name} alredy exist! Probllem: ${e.message}")
-                }
+            val matcher = ExampleMatcher.matching().withMatcher("link", ExampleMatcher.GenericPropertyMatchers.startsWith())
+            val savedTags = content.tags!!
+            savedTags.removeAll {
+                tagRepository.existsByLink(it.link!!)
             }
-
+            tagRepository.saveAll(savedTags)
             if(linkUnique){
                 contentRepository.save(content)
                 val body = Body()
@@ -200,6 +178,7 @@ class ContentController(@Autowired private val contentRepository : ContentReposi
                     val forLink = now.substring(IntRange(len-5,len-1))
                     content.link = "${content.link}_$forLink"
                 }
+                println("linkUnique image name uuu = ${content.imageName}")
                 contentRepository.save(content)
                 val body = Body()
                 body.content = content
@@ -247,7 +226,6 @@ class ContentController(@Autowired private val contentRepository : ContentReposi
         if (contentRepository.existsById(id)){
             response.status = HttpStatus.OK
             response.body = Body()
-            response.body?.content = contentRepository.findById(id).get()
             try {
                 storageService.removeFile(response.body?.content?.imageName ?: "")
             } catch (e: StorageException) {
@@ -260,7 +238,6 @@ class ContentController(@Autowired private val contentRepository : ContentReposi
         }
         return response
     }
-
 
 
 }

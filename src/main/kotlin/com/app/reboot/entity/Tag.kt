@@ -12,13 +12,15 @@ class Tag: Serializable  {
     var id: Long? = null
 
     @Column(length=255)
-    var name: String = ""
+    var name: String? = null
 
     @Column(length=255, unique = true)
-    var link: String = ""
+    var link: String? = null
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
     var contents: Set<Content>? = null
+
+
 
     constructor(name: String, link: String) {
         this.name = name
@@ -28,6 +30,10 @@ class Tag: Serializable  {
     constructor(id: Long?, name: String, link: String) {
         this.id = id
         this.name = name
+        this.link = link
+    }
+
+    constructor(link: String) {
         this.link = link
     }
 

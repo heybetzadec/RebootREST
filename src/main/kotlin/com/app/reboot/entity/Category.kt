@@ -57,8 +57,6 @@ class Category: Serializable {
 
     constructor()
 
-
-
     constructor(name: String, visible:Boolean) {
         this.name = name
         this.visible = visible
