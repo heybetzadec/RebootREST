@@ -14,6 +14,13 @@ class TagImplements: TagRepository {
         return findOne(example).isEmpty
     }
 
+    override fun findByLink(link: String): Tag? {
+        val tag = Tag(link)
+        val matcher = ExampleMatcher.matching().withMatcher("link", ExampleMatcher.GenericPropertyMatchers.startsWith()).withIgnoreNullValues()
+        val example = Example.of<Tag>(tag, matcher)
+        return findOne(example).get()
+    }
+
     override fun <S : Tag?> save(entity: S): S {
         return save(entity)
     }

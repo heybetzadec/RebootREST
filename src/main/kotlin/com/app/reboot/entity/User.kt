@@ -6,7 +6,7 @@ import java.util.*
 import javax.persistence.*
 
 @Entity
-@Table(name = "user_tbl")
+@Table
 class User:Serializable  {
 
     @Id
@@ -24,9 +24,9 @@ class User:Serializable  {
     @Column(length=255)
     var logo: String? = null
 
-    @Column(name = "is_man", columnDefinition = "TINYINT")
+    @Column(columnDefinition = "TINYINT")
     @Type(type = "org.hibernate.type.NumericBooleanType")
-    var isMan = null
+    var isMan:Boolean? = null
 
     @Column(length=60)
     var mail: String = ""
@@ -40,11 +40,11 @@ class User:Serializable  {
     @Column(length=40)
     var pin: String? = null
 
-    @Column(name = "is_active", columnDefinition = "TINYINT")
+    @Column(columnDefinition = "TINYINT")
     @Type(type = "org.hibernate.type.NumericBooleanType")
     var isActive: Boolean? = null
 
-    @Column(name = "token_expired", columnDefinition = "TINYINT")
+    @Column(columnDefinition = "TINYINT")
     @Type(type = "org.hibernate.type.NumericBooleanType")
     var tokenExpired: Boolean? = null
 
@@ -52,16 +52,17 @@ class User:Serializable  {
     var note: String? = null
 
     @ManyToOne
-    @JoinTable(name = "user_role", joinColumns = [JoinColumn(name = "user_id", referencedColumnName = "id")], inverseJoinColumns = [JoinColumn(name = "role_id", referencedColumnName = "id")])
+//    @JoinTable(joinColumns = [JoinColumn(name = "user_id", referencedColumnName = "id")], inverseJoinColumns = [JoinColumn(name = "role_id", referencedColumnName = "id")])
+//    @JoinTable
     var userRole: Role? = null
 
-    @Column(name="last_login", columnDefinition="TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    @Column(columnDefinition="TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     var lastLoginDate: Date? = null
 
-    @Column(name="create_date", columnDefinition="TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    @Column(columnDefinition="TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     var createDate: Date? = null
 
-    @Column(name="update_date", columnDefinition="TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    @Column(columnDefinition="TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     var updateDate: Date? = null
 
     constructor()

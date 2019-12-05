@@ -7,7 +7,7 @@ import javax.persistence.*
 
 
 @Entity
-@Table(name = "category_tbl")
+@Table
 class Category: Serializable {
 
     @Id
@@ -38,11 +38,11 @@ class Category: Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     var parentCategory: Category? = null
 
-    @Column(name="create_date", columnDefinition="TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    @Column(columnDefinition="TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     var createDate: Date? = null
 
-    @Column(name="update_date", columnDefinition="TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    @Column(columnDefinition="TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     var updateDate: Date? = null
 

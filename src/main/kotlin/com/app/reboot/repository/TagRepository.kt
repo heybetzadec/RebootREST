@@ -10,5 +10,6 @@ interface TagRepository : JpaRepository<Tag, Long>{
 
 //    fun saveAll(tags:MutableList<Tag>?): Int
     fun existsByLink(link:String): Boolean
+    fun findByLink(link:String): Tag?
 
 }

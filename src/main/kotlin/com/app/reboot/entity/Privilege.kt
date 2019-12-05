@@ -6,7 +6,7 @@ import java.io.Serializable
 import javax.persistence.*
 
 @Entity
-@Table(name = "privilege_tbl")
+@Table
 class Privilege : Serializable {
 
     @Id
@@ -15,19 +15,19 @@ class Privilege : Serializable {
 
     var entity:String? = null
 
-    @Column(name = "readable", columnDefinition = "TINYINT")
+    @Column(columnDefinition = "TINYINT")
     @Type(type = "org.hibernate.type.NumericBooleanType")
     var readable:Boolean? = null
 
-    @Column(name = "addable", columnDefinition = "TINYINT")
+    @Column(columnDefinition = "TINYINT")
     @Type(type = "org.hibernate.type.NumericBooleanType")
     var addable:Boolean? = null
 
-    @Column(name = "editable", columnDefinition = "TINYINT")
+    @Column(columnDefinition = "TINYINT")
     @Type(type = "org.hibernate.type.NumericBooleanType")
     var editable:Boolean? = null
 
-    @Column(name = "removable", columnDefinition = "TINYINT")
+    @Column(columnDefinition = "TINYINT")
     @Type(type = "org.hibernate.type.NumericBooleanType")
     var removable:Boolean? = null
 

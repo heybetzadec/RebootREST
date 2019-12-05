@@ -57,7 +57,6 @@ class ContentController(@Autowired private val contentRepository : ContentReposi
         return response
     }
 
-
     @ExceptionHandler(StorageException::class)
     fun handleStorageFileNotFound(e: StorageException) {
         println("handleStorageFileNotFound: ${e.message}")
@@ -83,8 +82,9 @@ class ContentController(@Autowired private val contentRepository : ContentReposi
             val body = Body()
             body.content = content
             response.body = body
+            response.status = HttpStatus.OK
+
         }
-        response.status = HttpStatus.OK
         return  response
     }
 
@@ -160,11 +160,19 @@ class ContentController(@Autowired private val contentRepository : ContentReposi
 
         try {
             val matcher = ExampleMatcher.matching().withMatcher("link", ExampleMatcher.GenericPropertyMatchers.startsWith())
-            val savedTags = content.tags!!
-            savedTags.removeAll {
-                tagRepository.existsByLink(it.link!!)
+            if (content.tags != null){
+                val savedTags = mutableListOf<Tag>()
+                savedTags.addAll(content.tags!!)
+                savedTags.removeAll {
+                    tagRepository.existsByLink(it.link!!)
+                }
+                tagRepository.saveAll(savedTags)
+                content.tags!!.forEach {
+                    val t = tagRepository.findByLink(it.link ?: "-")
+                    it.id = t?.id
+                }
             }
-            tagRepository.saveAll(savedTags)
+
             if(linkUnique){
                 contentRepository.save(content)
                 val body = Body()
@@ -178,7 +186,6 @@ class ContentController(@Autowired private val contentRepository : ContentReposi
                     val forLink = now.substring(IntRange(len-5,len-1))
                     content.link = "${content.link}_$forLink"
                 }
-                println("linkUnique image name uuu = ${content.imageName}")
                 contentRepository.save(content)
                 val body = Body()
                 body.content = content
@@ -239,5 +246,10 @@ class ContentController(@Autowired private val contentRepository : ContentReposi
         return response
     }
 
+    @RequestMapping(value = ["test"], method = [RequestMethod.GET])
+    @Throws(Exception::class)
+    fun test():String{
+        return tagRepository.findByLink("appuu")?.link ?: "yoxdu"
+    }
 
 }

@@ -7,8 +7,8 @@ import javax.persistence.*
 
 
 @Entity
-@Table(name = "content_tbl")
-class Content :Serializable{
+@Table
+class Content() :Serializable{
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -20,7 +20,7 @@ class Content :Serializable{
     @Column(length=255)
     var link: String = ""
 
-    @Column(name="image_name")
+    @Column
     var imageName: String = ""
 
     @Column(length=255)
@@ -39,31 +39,36 @@ class Content :Serializable{
 //    @JsonIgnore
     var categories: MutableList<Category>? = null
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
-//    @JsonIgnore
+    @ManyToMany(fetch = FetchType.LAZY, cascade = [CascadeType.PERSIST])
+//    @JoinTable(
+//            name = "content_tbl_tags",
+//            joinColumns = [JoinColumn(name = "content_id")],
+//            inverseJoinColumns = [JoinColumn(name = "tags_id")]
+//    )
+    @JoinTable
     var tags: MutableList<Tag>? = null
 
-    @Column(name="add_user_id")
+    @Column
     var addUserId:Int = 0
 
-    @Column(name="edit_user_id")
+    @Column
     var editUserId:Int = 0
 
     var visible: Boolean = true
 
-    @Column(name="view_count")
+    @Column
     var viewCount: Int = 0
 
-    @Column(name="create_date", columnDefinition="TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    @Column(columnDefinition="TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     var createDate: Date = Date()
 
-    @Column(name="update_date", columnDefinition="TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    @Column(columnDefinition="TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     var updateDate: Date = Date()
 
 
-    constructor(id: Long?, title: String, link: String, imageName: String, embed: String, description: String, keyword: String, html: String, addUserId: Int, editUserId: Int, visible: Boolean, viewCount: Int, createDate: Date, updateDate: Date) {
+    constructor(id: Long?, title: String, link: String, imageName: String, embed: String, description: String, keyword: String, html: String, addUserId: Int, editUserId: Int, visible: Boolean, viewCount: Int, createDate: Date, updateDate: Date) : this() {
         this.id = id
         this.title = title
         this.link = link
@@ -80,7 +85,7 @@ class Content :Serializable{
         this.updateDate = updateDate
     }
 
-    constructor(id: Long?, title: String, imageName: String, visible: Boolean, viewCount: Int, createDate: Date) {
+    constructor(id: Long?, title: String, imageName: String, visible: Boolean, viewCount: Int, createDate: Date) : this() {
         this.id = id
         this.title = title
         this.imageName = imageName
