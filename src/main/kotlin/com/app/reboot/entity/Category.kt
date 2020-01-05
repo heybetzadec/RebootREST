@@ -8,7 +8,7 @@ import javax.persistence.*
 
 @Entity
 @Table
-class Category: Serializable {
+class Category(): Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -55,14 +55,13 @@ class Category: Serializable {
     @Transient
     var parentLink: String? = null
 
-    constructor()
 
-    constructor(name: String, visible:Boolean) {
+    constructor(name: String, visible:Boolean) : this() {
         this.name = name
         this.visible = visible
     }
 
-    constructor(id: Long?, name: String, title: String, link: String, description: String, keyword: String, visible: Boolean, createDate: Date, updateDate: Date) {
+    constructor(id: Long?, name: String, title: String, link: String, description: String, keyword: String, visible: Boolean, createDate: Date, updateDate: Date) : this() {
         this.id = id
         this.name = name
         this.title = title
@@ -74,7 +73,7 @@ class Category: Serializable {
         this.updateDate = updateDate
     }
 
-    constructor(name: String, title: String, link: String, visible:Boolean, description: String,keyword: String = "") {
+    constructor(name: String, title: String, link: String, visible:Boolean, description: String,keyword: String = "") : this() {
         this.name = name
         this.title = title
         this.link = link
@@ -83,20 +82,20 @@ class Category: Serializable {
         this.keyword = keyword
     }
 
-    constructor(id: Long?, name: String, link: String, parentCategory: Category?) {
+    constructor(id: Long?, name: String, link: String, parentCategory: Category?) : this() {
         this.id = id
         this.name = name
         this.link = link
         this.parentCategory = parentCategory
     }
 
-    constructor(id: Long?, name: String, link: String) {
+    constructor(id: Long?, name: String, link: String) : this() {
         this.id = id
         this.name = name
         this.link = link
     }
 
-    constructor(id: Long?, name: String, title: String, link: String, description: String, keyword: String, visible: Boolean, contents: Set<Content>?, parentCategory: Category?, createDate: Date, updateDate: Date, parentId: Long?, parentName: String?, parentLink: String?) {
+    constructor(id: Long?, name: String, title: String, link: String, description: String, keyword: String, visible: Boolean, contents: Set<Content>?, parentCategory: Category?, createDate: Date, updateDate: Date, parentId: Long?, parentName: String?, parentLink: String?) : this() {
         this.id = id
         this.name = name
         this.title = title
@@ -113,7 +112,7 @@ class Category: Serializable {
         this.parentLink = parentLink
     }
 
-    constructor(link: String) {
+    constructor(link: String) : this() {
         this.link = link
     }
 

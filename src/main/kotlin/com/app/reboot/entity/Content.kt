@@ -39,21 +39,17 @@ class Content() :Serializable{
 //    @JsonIgnore
     var categories: MutableList<Category>? = null
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = [CascadeType.PERSIST])
-//    @JoinTable(
-//            name = "content_tbl_tags",
-//            joinColumns = [JoinColumn(name = "content_id")],
-//            inverseJoinColumns = [JoinColumn(name = "tags_id")]
-//    )
-    @JoinTable
+    @ManyToMany(fetch = FetchType.LAZY, cascade = [CascadeType.MERGE])
+    @JoinColumn
     var tags: MutableList<Tag>? = null
 
     @Column
-    var addUserId:Int = 0
+    var addUserId:Long? = null
 
     @Column
-    var editUserId:Int = 0
+    var editUserId:Long? = null
 
+    @Column
     var visible: Boolean = true
 
     @Column
@@ -68,7 +64,9 @@ class Content() :Serializable{
     var updateDate: Date = Date()
 
 
-    constructor(id: Long?, title: String, link: String, imageName: String, embed: String, description: String, keyword: String, html: String, addUserId: Int, editUserId: Int, visible: Boolean, viewCount: Int, createDate: Date, updateDate: Date) : this() {
+
+
+    constructor(id: Long?, title: String, link: String, imageName: String, embed: String, description: String, keyword: String, html: String, addUserId: Long?, editUserId: Long?, visible: Boolean, viewCount: Int, createDate: Date, updateDate: Date) : this() {
         this.id = id
         this.title = title
         this.link = link
@@ -94,5 +92,28 @@ class Content() :Serializable{
         this.createDate = createDate
     }
 
+    constructor(id: Long?, title: String, link: String, imageName: String, categories: MutableList<Category>?, tags: MutableList<Tag>?)  : this() {
+        this.id = id
+        this.title = title
+        this.link = link
+        this.imageName = imageName
+        this.categories = categories
+        this.tags = tags
+    }
+
+    constructor(id: Long?, title: String, link: String, imageName: String, categories: MutableList<Category>?, tags: MutableList<Tag>?, addUserId: Long?, editUserId: Long?, visible: Boolean, viewCount: Int, createDate: Date, updateDate: Date) : this() {
+        this.id = id
+        this.title = title
+        this.link = link
+        this.imageName = imageName
+        this.categories = categories
+        this.tags = tags
+        this.addUserId = addUserId
+        this.editUserId = editUserId
+        this.visible = visible
+        this.viewCount = viewCount
+        this.createDate = createDate
+        this.updateDate = updateDate
+    }
 
 }

@@ -80,21 +80,9 @@ class CategoryController (@Autowired private val categoryRepository : CategoryRe
     @Throws(Exception::class)
     fun getCategoriesForSelect(@PathVariable id :Long): Response{
         val response = Response()
-//        val cb = em.criteriaBuilder
-//        val cq = cb.createQuery(Category::class.java)
-//        val root = cq.from(Category::class.java)
-////        cq.select
-//        cq.where(
-//                cb.notEqual(root.get<Long>("id"), id)
-//        )
-//        val orderList = listOf(cb.desc(root.get<Long>("id")))
-//        cq.orderBy(orderList)
-//        val query = em.createQuery<Category>(cq)
-//        val categories: MutableList<Category>
         val categories: MutableList<Category> = em.createQuery(
                 "select c " +
                         "from Category c WHERE c.id != :id  order by id desc", Category::class.java).setParameter("id", id).resultList
-//        categories = query.resultList
         if (categories.size > 0) {
             val body = Body()
             response.body = body
@@ -159,22 +147,6 @@ class CategoryController (@Autowired private val categoryRepository : CategoryRe
 
         return response
     }
-
-
-//    @RequestMapping(value = ["/secure/category/remove"], method = [RequestMethod.GET])
-//    fun removeCategory(@RequestBody category :Category): Response {
-//        val response = Response()
-//        if (categoryRepository.existsById(category.id ?: 0)){
-//            categoryRepository.delete(category)
-//            response.status = HttpStatus.OK
-//            response.body = Body()
-//            response.body?.category = category
-//        } else {
-//            response.status = HttpStatus.NOT_FOUND
-//            response.problem = Problem(404, "${category.name} kateqoriyası yoxdur.","Not found user")
-//        }
-//        return response
-//    }
 
     @RequestMapping(value = ["/secure/category/remove/id/{id}"], method = [RequestMethod.GET])
     fun removeCategory(@PathVariable id:Long): Response {

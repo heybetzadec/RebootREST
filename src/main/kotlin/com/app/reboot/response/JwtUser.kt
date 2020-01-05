@@ -13,5 +13,9 @@ class JwtUser {
 
     constructor()
 
+    override fun toString(): String {
+        return "JwtUser(username='$username', id=$id, role='$role')"
+    }
+
 
 }
