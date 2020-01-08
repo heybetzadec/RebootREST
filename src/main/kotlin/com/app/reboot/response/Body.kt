@@ -14,6 +14,7 @@ class Body {
 
     var loginUser:LoginUser? = null
     var users: MutableList<User>? = null
+    var roles: MutableList<Role>? = null
     var categories: MutableList<Category>? = null
     var contents: MutableList<Content>? = null
     var sliders: MutableList<Slider>? = null

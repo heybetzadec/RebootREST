@@ -19,7 +19,7 @@ class UserData {
 
     var username: String = ""
 
-    var isActive: Boolean? = null
+    var active: Boolean? = null
 
     var note: String? = null
 
@@ -31,7 +31,7 @@ class UserData {
 
     var updateDate: Date? = null
 
-    constructor(id: Long?, name: String?, surname: String?, age: Int?, logo: String?, isMan: Boolean?, mail: String, username: String, isActive: Boolean?, note: String?, roleName: String?, lastLoginDate: Date?, createDate: Date?, updateDate: Date?) {
+    constructor(id: Long?, name: String?, surname: String?, age: Int?, logo: String?, isMan: Boolean?, mail: String, username: String, active: Boolean?, note: String?, roleName: String?, lastLoginDate: Date?, createDate: Date?, updateDate: Date?) {
         this.id = id
         this.name = name
         this.surname = surname
@@ -40,7 +40,7 @@ class UserData {
         this.isMan = isMan
         this.mail = mail
         this.username = username
-        this.isActive = isActive
+        this.active = active
         this.note = note
         this.roleName = roleName
         this.lastLoginDate = lastLoginDate

@@ -3,10 +3,15 @@ package com.app.reboot.controller
 import com.app.reboot.config.Final
 import com.app.reboot.entity.Content
 import com.app.reboot.entity.Role
+import com.app.reboot.entity.Tag
 import com.app.reboot.entity.User
+import com.app.reboot.exception.StorageException
+import com.app.reboot.repository.RoleRepository
 import com.app.reboot.repository.UserRepository
 import com.app.reboot.response.*
 import com.app.reboot.security.JwtGenerator
+import com.app.reboot.security.JwtValidator
+import com.app.reboot.service.StorageService
 import com.app.reboot.use.Function
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Example
@@ -17,30 +22,33 @@ import org.springframework.web.bind.annotation.*
 import javax.persistence.EntityManager
 import javax.persistence.PersistenceContext
 import org.springframework.web.bind.annotation.RequestHeader
+import org.springframework.web.multipart.MultipartFile
+import java.time.LocalDateTime
 import java.util.*
 
 
 @RestController
-class UserController (@Autowired private val userRepository : UserRepository, private val jwtGenerator: JwtGenerator){
+class UserController (
+        @Autowired private val userRepository : UserRepository,
+        @Autowired private val roleRepository : RoleRepository,
+        private val jwtGenerator: JwtGenerator
+){
+
 
     @PersistenceContext
     lateinit var em: EntityManager
+    @Autowired
+    private lateinit var storageService: StorageService
 
-//    @RequestMapping(method = [RequestMethod.GET], path = ["/users/load"])
-//    fun loadDefault(): Response {
-//        val users = mutableListOf<User>(
-//                User("Cavad", "Heybətzadə", "hecaheybet", "heybetzadec@gmail.com", "12345678", true),
-//                User("Toğrul", "İbrahimov", "togrul", "togrul@gmail.com", "12345678", true)
-//        )
-//        userRepository.saveAll(users)
-//        val body = Body()
-//        body.users = users
-//        return Response(HttpStatus.OK, body)
-//    }
+    @RequestMapping(value = ["/user/get/model"], method = [RequestMethod.GET])
+    @Throws(Exception::class)
+    fun getModel(): User {
+        return User(null, "", "", 18, "", true, "", "", "", true, false, "", null, null, Date(), Date())
+    }
 
     @RequestMapping(value = ["/user/login"], method = [RequestMethod.GET], produces = [MediaType.APPLICATION_JSON_VALUE])
     @Throws(Exception::class)
-    fun saveCategory(@RequestHeader("Authorization") authorizationHeader :String): Response {
+    fun saveRole(@RequestHeader("Authorization") authorizationHeader :String): Response {
         val response = Response()
         val btoa = authorizationHeader.replace("Basic ","")
         val str = Function.aotb(btoa)
@@ -112,7 +120,7 @@ class UserController (@Autowired private val userRepository : UserRepository, pr
     fun getUsers(): Response{
         val response = Response()
         val userData = em.createQuery(
-                "select NEW com.app.reboot.response.UserData(id, name, surname,  age, logo, isMan, mail, username, isActive, note, userRole.name, lastLoginDate, createDate, updateDate) " +
+                "select NEW com.app.reboot.response.UserData(id, name, surname,  age, logo, isMan, mail, username, active, note, userRole.name, lastLoginDate, createDate, updateDate) " +
                         "from User u order by id desc", UserData::class.java)
                 .resultList
         if (userData.size > 0) {
@@ -139,13 +147,80 @@ class UserController (@Autowired private val userRepository : UserRepository, pr
             response.problem = error
             response.status = HttpStatus.NOT_ACCEPTABLE
         } else {
+            val user = result.get()
+            user.password = ""
             val body = Body()
-            body.user = result.get()
+            body.user = user
             response.body = body
         }
         response.status = HttpStatus.OK
         return  response
     }
+
+    @RequestMapping(value = ["secure/user/upload/img"], method = [RequestMethod.POST], consumes = ["multipart/form-data"])
+    fun uploadLogo(@RequestParam file: MultipartFile, @RequestParam oldImage: String) {
+        try {
+            storageService.uploadLogoSetSize(file, Final.logoWidth, Final.logoHeigh)
+            if (oldImage.isNotEmpty()){
+                storageService.removeFile(oldImage)
+            }
+        } catch (e: StorageException){
+            println("Problem upload file: ${e.message}}")
+        }
+    }
+
+    @RequestMapping(value = ["secure/user/save"], method = [RequestMethod.POST], produces = [MediaType.APPLICATION_JSON_VALUE])
+    @Throws(Exception::class)
+    fun addContent(@RequestHeader("Authorisation") authorizationHeader :String, @RequestBody user : User): Response {
+        val response = Response()
+        val jwtValidator = JwtValidator();
+        val token = authorizationHeader.removePrefix("Token ")
+        val jwtUser = jwtValidator.validate(token) ?: JwtUser("", 0, "")
+        val role:Role = roleRepository.findByName(jwtUser.role).get()
+        val privlage = role.privileges?.find { it.entity == "user" }
+        if (privlage != null){
+            if (privlage.addable ?: false){
+                val dbUsers = userRepository.findAll();
+                val matchingUser = dbUsers.findLast {
+                    it.username == user.username || it.mail == user.mail
+                }
+
+                if (matchingUser != null){
+                    var error = Problem()
+                    if (user.mail.isEmpty()){
+                        error = Problem(500, "${user.username} istifadəçisi artıq bazada var!","already_have_user_by_username")
+                    } else if (user.username.isEmpty()){
+                        error = Problem(500, "${user.mail} epoçt ünvanı artıq bazada var!","already_have_user_by_mail")
+                    }
+                    response.problem = error
+                    response.status = HttpStatus.NOT_ACCEPTABLE
+                } else {
+                    try {
+                        val body = Body()
+                        if (user.id == null){
+                            user.addUserId = jwtUser.id
+                        } else {
+                            user.editUserId = jwtUser.id
+                        }
+                        userRepository.save(user)
+                        body.user = user
+                        response.body = body
+                        response.status = HttpStatus.OK
+                    } catch (e:Exception){
+                        val error = Problem(500,"Saxlanma zamanı problem yarandı!","db_save_problem")
+                        response.problem = error
+                        response.status = HttpStatus.NOT_ACCEPTABLE
+                    }
+                }
+            } else {
+                val error = Problem(500,"İcazəniz yoxdur!","No permission!")
+                response.problem = error
+                response.status = HttpStatus.METHOD_NOT_ALLOWED
+            }
+        }
+        return response
+    }
+
 
 
 }

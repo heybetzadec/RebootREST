@@ -67,11 +67,11 @@ class InitialDataLoader : ApplicationListener<ContextRefreshedEvent> {
             createPrivilegesIfNotFound(adminPrivileges)
             createPrivilegesIfNotFound(editorPrivlages)
         }
-        createRoleIfNotFound("ROLE_ADMIN", adminPrivileges)
-        createRoleIfNotFound("ROLE_EDITOR", editorPrivlages)
+        createRoleIfNotFound("ADMIN", adminPrivileges)
+        createRoleIfNotFound("EDITOR", editorPrivlages)
 
 
-        val adminRole = roleRepository!!.findByName("ROLE_ADMIN").get()
+        val adminRole = roleRepository!!.findByName("ADMIN").get()
         val users = mutableListOf<User>(
                 User("Cavad", "Heybətzadə", "hecaheybet", "heybetzadec@gmail.com", Function.encoder("blackberryz10"), true),
                 User("Toğrul", "İbrahimov", "togrul", "togrul@gmail.com", Function.encoder("12345678"), true))
@@ -79,7 +79,7 @@ class InitialDataLoader : ApplicationListener<ContextRefreshedEvent> {
             try {
                 userRepository!!.findByMail(it.mail).get()
             } catch (e: NoSuchElementException) {
-                it.isActive
+                it.active
                 it.userRole = adminRole
                 userRepository!!.save<User>(it)
             }

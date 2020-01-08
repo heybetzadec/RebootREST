@@ -22,7 +22,6 @@ import javax.imageio.ImageIO
 @Service
 class StorageService {
 
-
     @Value("./media/")
     private val path: String? = null
 
@@ -40,7 +39,29 @@ class StorageService {
         }
     }
 
-    fun uploadImageSetSize(file: MultipartFile, width:Int, height:Int) {
+    fun uploadImageWithThumbnail(file: MultipartFile) {
+        val fileName = file.originalFilename ?: "img.jpg"
+        uploadImageSetSize(file, Final.contentImageMediaPath,  fileName, Final.imageWidth, Final.imageHeigh)
+        uploadImageSetSize(file, Final.contentThubnailImageMediaPath, "th_${fileName}", Final.thubnailWidth, Final.thubnailHeigh)
+    }
+
+    fun uploadImageSetSize(file: MultipartFile, mediaPath:String, fileName:String, width:Int, height:Int) {
+        if (file.isEmpty) {
+            throw StorageException("Failed to store empty file")
+        }
+        try {
+            val `is` = ByteArrayInputStream(resizeImageToSmall(file.bytes, getFileExtension(file.name), width, height))
+            val bufferedImage = ImageIO.read(`is`)
+            val resizedBufferedImage = bufferedImage.getSubimage(0, 0, width, height)
+            val outputfile = File(path + mediaPath + fileName)
+            ImageIO.write(resizedBufferedImage, getFileExtension(fileName), outputfile)
+        } catch (e: IOException) {
+            val msg = String.format("Failed to store file", file.name)
+            throw StorageException(msg, e)
+        }
+    }
+
+    fun uploadLogoSetSize(file: MultipartFile, width:Int, height:Int) {
         if (file.isEmpty) {
             throw StorageException("Failed to store empty file")
         }
@@ -49,7 +70,7 @@ class StorageService {
             val `is` = ByteArrayInputStream(resizeImageToSmall(file.bytes, getFileExtension(file.name), width, height))
             val bufferedImage = ImageIO.read(`is`)
             val resizedBufferedImage = bufferedImage.getSubimage(0, 0, width, height)
-            val outputfile = File(path+fileName)
+            val outputfile = File(path + Final.logoImagePath + fileName)
             ImageIO.write(resizedBufferedImage, getFileExtension(fileName), outputfile)
         } catch (e: IOException) {
             val msg = String.format("Failed to store file", file.name)
@@ -57,13 +78,7 @@ class StorageService {
         }
     }
 
-    fun uploadImageWithThumbnail(file: MultipartFile) {
-        val fileName = file.originalFilename ?: "img.jpg"
-        uploadImageSetSize(file,  fileName, Final.imageWidth, Final.imageHeigh)
-        uploadImageSetSize(file, "th_${fileName}", Final.thubnailWidth, Final.thubnailHeigh)
-    }
-
-    fun resizeImageToSmall(fileData: ByteArray, formatName: String, width:Int, height:Int): ByteArray {
+    private fun resizeImageToSmall(fileData: ByteArray, formatName: String, width:Int, height:Int): ByteArray {
         val `in` = ByteArrayInputStream(fileData)
         try {
             val img = ImageIO.read(`in`)
@@ -74,7 +89,6 @@ class StorageService {
             } else {
                 w = img.width / (img.height / h)
             }
-
             val scaledImage = img.getScaledInstance(w, h, Image.SCALE_SMOOTH)
             val imageBuff = BufferedImage(w, h, BufferedImage.TYPE_INT_RGB)
             imageBuff.graphics.drawImage(scaledImage, 0, 0, Color(0, 0, 0), null)
@@ -88,38 +102,6 @@ class StorageService {
         }
     }
 
-    fun uploadImageSetSize(file: MultipartFile, fileName:String, width:Int, height:Int) {
-        if (file.isEmpty) {
-            throw StorageException("Failed to store empty file")
-        }
-        try {
-            val `is` = ByteArrayInputStream(resizeImageToSmall(file.bytes, getFileExtension(file.name), width, height))
-            val bufferedImage = ImageIO.read(`is`)
-            val resizedBufferedImage = bufferedImage.getSubimage(0, 0, width, height)
-            val outputfile = File(path+fileName)
-            ImageIO.write(resizedBufferedImage, getFileExtension(fileName), outputfile)
-        } catch (e: IOException) {
-            val msg = String.format("Failed to store file", file.name)
-            throw StorageException(msg, e)
-        }
-    }
-
-//    fun resizeImageToSize(fileData: ByteArray, formatName: String, width:Int, height:Int): ByteArray {
-//        val `in` = ByteArrayInputStream(fileData)
-//        try {
-//            val img = ImageIO.read(`in`)
-//            val scaledImage = img.getScaledInstance(width, height, Image.SCALE_SMOOTH)
-//            val imageBuff = BufferedImage(width, height, BufferedImage.TYPE_INT_RGB)
-//            imageBuff.graphics.drawImage(scaledImage, 0, 0, Color(0, 0, 0), null)
-//            val buffer = ByteArrayOutputStream()
-//
-//            ImageIO.write(imageBuff, "jpg", buffer)
-//
-//            return buffer.toByteArray()
-//        } catch (e: IOException) {
-//            throw ExceptionInInitializerError("IOException in scale image. Error: ${e.message}")
-//        }
-//    }
 
     private fun getFileExtension(name: String): String {
         val lastIndexOf = name.lastIndexOf(".")
@@ -129,7 +111,7 @@ class StorageService {
     }
 
 
-    fun resizeImageToSmall(fileData: ByteArray, currentSize: Long, maxSize: Long): ByteArray {
+    private fun resizeImageToSmall(fileData: ByteArray, currentSize: Long, maxSize: Long): ByteArray {
         if (currentSize < maxSize) {
             return fileData
         }
@@ -165,7 +147,6 @@ class StorageService {
         }
     }
 
-
     fun removeFile(fileName:String) {
         try {
             Files.deleteIfExists(Paths.get(path!! + fileName))
@@ -176,7 +157,6 @@ class StorageService {
         } catch (e: IOException  ){
             throw StorageException("Failed file delete")
         }
-
     }
 
 }

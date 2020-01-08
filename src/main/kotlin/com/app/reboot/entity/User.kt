@@ -42,7 +42,7 @@ class User:Serializable  {
 
     @Column(columnDefinition = "TINYINT")
     @Type(type = "org.hibernate.type.NumericBooleanType")
-    var isActive: Boolean? = null
+    var active: Boolean? = null
 
     @Column(columnDefinition = "TINYINT")
     @Type(type = "org.hibernate.type.NumericBooleanType")
@@ -65,15 +65,23 @@ class User:Serializable  {
     @Column(columnDefinition="TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     var updateDate: Date? = null
 
+    @Column
+    var addUserId:Long? = null
+
+    @Column
+    var editUserId:Long? = null
+
     constructor()
 
-    constructor(name: String, surname: String, username: String, mail: String, password: String, isActive: Boolean) {
+    constructor(name: String, surname: String, username: String, mail: String, password: String, active: Boolean) {
         this.name = name
         this.surname = surname
         this.username = username
         this.mail = mail
         this.password = password
-        this.isActive = isActive
+        this.active = active
+        this.updateDate = Date()
+        this.createDate = Date()
     }
 
     constructor(mail: String) {
@@ -86,9 +94,28 @@ class User:Serializable  {
         this.password = password
     }
 
+    constructor(id: Long?, name: String?, surname: String?, age: Int?, logo: String?, isMan: Boolean?, mail: String, username: String, password: String, active: Boolean?, tokenExpired: Boolean?, note: String?, userRole: Role?, lastLoginDate: Date?, createDate: Date?, updateDate: Date?) {
+        this.id = id
+        this.name = name
+        this.surname = surname
+        this.age = age
+        this.logo = logo
+        this.isMan = isMan
+        this.mail = mail
+        this.username = username
+        this.password = password
+        this.active = active
+        this.tokenExpired = tokenExpired
+        this.note = note
+        this.userRole = userRole
+        this.lastLoginDate = lastLoginDate
+        this.createDate = createDate
+        this.updateDate = updateDate
+    }
+
 
     override fun toString(): String {
-        return "User(id=$id, name='$name', surname='$surname', age=$age, logo='$logo', mail='$mail', password='$password', pin='$pin', isActive=$isActive, note='$note', lastLoginDate=$lastLoginDate, createDate=$createDate, updateDate=$updateDate)"
+        return "User(id=$id, name='$name', surname='$surname', age=$age, logo='$logo', mail='$mail', password='$password', pin='$pin', active=$active, note='$note', lastLoginDate=$lastLoginDate, createDate=$createDate, updateDate=$updateDate)"
     }
 
 }

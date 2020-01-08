@@ -10,12 +10,12 @@ import java.util.Base64.getEncoder
 
 class Final {
     companion object {
-//        val TINYBLOB_LENGTH: Long = 255
-//        val BLOB_LENGTH: Long = 65535
-//        val MEDIUMBLOB_LENGTH: Long = 16777215
-
         val urlApp = "http://localhost:8080/"
         val urlREST = "http://localhost:8081/"
+
+        val contentImageMediaPath = "image/"
+        val contentThubnailImageMediaPath = "thubnail/"
+        val logoImagePath = "logo/"
 
         val jwtSecretKey = "rebootapp"
 
@@ -25,6 +25,9 @@ class Final {
         val imageWidth = 778
         val imageHeigh = 437
 
+        val logoWidth = 778
+        val logoHeigh = 437
+
         val sliderImageWidth = 778
         val sliderImageHeigh = 437
 
@@ -33,7 +36,6 @@ class Final {
 
         val mainRightWidth = 382
         val mainRightHeigh = 436
-
     }
 
 

@@ -42,7 +42,7 @@ class MyUserDetailsService : UserDetailsService {
         val user = findUsers.get()
 
         return org.springframework.security.core.userdetails.User(
-                user.mail, user.password, user.isActive ?: true, true, true,
+                user.mail, user.password, user.active ?: true, true, true,
                 true, user.userRole?.let { getAuthorities(it) })
     }
 
