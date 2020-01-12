@@ -172,7 +172,6 @@ class UserController (
     @Throws(Exception::class)
     fun addUser(@RequestHeader("Authorisation") authorizationHeader :String, @RequestBody user : User): Response {
         val response = Response()
-        println("save user = " + user.toString())
         val jwtValidator = JwtValidator();
         val token = authorizationHeader.removePrefix("Token ")
         val jwtUser = jwtValidator.validate(token) ?: JwtUser("", 0, "")
@@ -185,7 +184,6 @@ class UserController (
                     val matchingUser = dbUsers.findLast {
                         it.username.isNotEmpty() && it.username.isNotEmpty() && (it.username == user.username || it.mail == user.mail)
                     }
-                    println("matchingUser = " + matchingUser)
                     if (matchingUser != null){
                         var error = Problem()
                         if (user.mail == matchingUser.mail){
