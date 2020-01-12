@@ -29,4 +29,9 @@ class Role(): Serializable {
         this.name = name
     }
 
+    override fun toString(): String {
+        return "Role(id=$id, name='$name', users=$users)"
+    }
+
+
 }

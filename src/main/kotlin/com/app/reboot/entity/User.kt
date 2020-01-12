@@ -1,5 +1,6 @@
 package com.app.reboot.entity
 
+import com.fasterxml.jackson.annotation.JsonFormat
 import org.hibernate.annotations.Type
 import java.io.Serializable
 import java.util.*
@@ -51,18 +52,21 @@ class User:Serializable  {
     @Column(length=255)
     var note: String? = null
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY, cascade = [CascadeType.MERGE])
 //    @JoinTable(joinColumns = [JoinColumn(name = "user_id", referencedColumnName = "id")], inverseJoinColumns = [JoinColumn(name = "role_id", referencedColumnName = "id")])
 //    @JoinTable
     var userRole: Role? = null
 
     @Column(columnDefinition="TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     var lastLoginDate: Date? = null
 
     @Column(columnDefinition="TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     var createDate: Date? = null
 
     @Column(columnDefinition="TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     var updateDate: Date? = null
 
     @Column
@@ -115,7 +119,7 @@ class User:Serializable  {
 
 
     override fun toString(): String {
-        return "User(id=$id, name='$name', surname='$surname', age=$age, logo='$logo', mail='$mail', password='$password', pin='$pin', active=$active, note='$note', lastLoginDate=$lastLoginDate, createDate=$createDate, updateDate=$updateDate)"
+        return "User(id=$id, name='$name', surname='$surname', age=$age, logo='$logo', mail='$mail', password='$password', pin='$pin', active=$active, note='$note', lastLoginDate=$lastLoginDate, createDate=$createDate, updateDate=$updateDate, role = ${userRole.toString()})"
     }
 
 }

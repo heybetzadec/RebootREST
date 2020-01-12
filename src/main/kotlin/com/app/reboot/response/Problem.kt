@@ -12,6 +12,12 @@ class Problem {
         this.message = message
         this.error = error
     }
+
+    override fun toString(): String {
+        return "Problem(code=$code, message='$message', error='$error')"
+    }
+
+
 }
 
 //200 - SUCESS

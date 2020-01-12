@@ -1,5 +1,6 @@
 package com.app.reboot.controller
 
+import com.app.reboot.config.Final
 import com.app.reboot.entity.Content
 import com.app.reboot.entity.Tag
 import com.app.reboot.exception.StorageException
@@ -41,8 +42,8 @@ class ContentController(@Autowired private val contentRepository : ContentReposi
         try {
             storageService.uploadImageWithThumbnail(file)
             if (oldImage.isNotEmpty()){
-                storageService.removeFile(oldImage)
-                storageService.removeFile("th_$oldImage")
+                storageService.removeFile(Final.contentImageMediaPath, oldImage)
+                storageService.removeFile(Final.contentThubnailImageMediaPath,"th_$oldImage")
             }
         } catch (e: StorageException){
             println("Problem upload file: ${e.message}}")
@@ -55,8 +56,8 @@ class ContentController(@Autowired private val contentRepository : ContentReposi
         val response = Response()
         response.status = HttpStatus.OK
         try {
-            storageService.removeFile(name)
-            storageService.removeFile("th_$name")
+            storageService.removeFile(Final.contentImageMediaPath, name)
+            storageService.removeFile(Final.contentThubnailImageMediaPath,"th_$name")
         } catch (e: StorageException){
             println("problem remove file: ${e.message}")
         }
@@ -89,7 +90,6 @@ class ContentController(@Autowired private val contentRepository : ContentReposi
             body.content = content
             response.body = body
             response.status = HttpStatus.OK
-
         }
         return  response
     }
@@ -218,8 +218,8 @@ class ContentController(@Autowired private val contentRepository : ContentReposi
                     response.status = HttpStatus.NOT_ACCEPTABLE
                     if (content.id == null) {
                         try {
-                            storageService.removeFile(content.imageName)
-                            storageService.removeFile("th_${content.imageName}")
+                            storageService.removeFile(Final.contentImageMediaPath,content.imageName)
+                            storageService.removeFile(Final.contentThubnailImageMediaPath,"th_${content.imageName}")
                         } catch (e: StorageException) {
                             println("problem remove file: ${e.message}")
                         }
@@ -238,10 +238,17 @@ class ContentController(@Autowired private val contentRepository : ContentReposi
     fun removeContent(@RequestBody content : Content): Response {
         val response = Response()
         if (contentRepository.existsById(content.id ?: 0)){
+
             contentRepository.delete(content)
             response.status = HttpStatus.OK
             response.body = Body()
             response.body?.content = content
+            try {
+                storageService.removeFile(Final.contentImageMediaPath, content.imageName)
+                storageService.removeFile(Final.contentThubnailImageMediaPath,"th_${content.imageName}")
+            } catch (e: StorageException) {
+                println("problem remove file: ${e.message}")
+            }
         } else {
             response.status = HttpStatus.NOT_FOUND
             response.problem = Problem(404, "${content.title} məzmunu yoxdur.","Not found content")
@@ -258,12 +265,14 @@ class ContentController(@Autowired private val contentRepository : ContentReposi
         if (contentRepository.existsById(id)){
             response.status = HttpStatus.OK
             response.body = Body()
+            contentRepository.deleteById(id)
             try {
-                storageService.removeFile(response.body?.content?.imageName ?: "")
+                val imgName = response.body?.content?.imageName ?: ""
+                storageService.removeFile(Final.contentImageMediaPath, imgName)
+                storageService.removeFile(Final.contentThubnailImageMediaPath,"th_${imgName}")
             } catch (e: StorageException) {
                 println("problem remove file: ${e.message}")
             }
-            contentRepository.deleteById(id)
         } else {
             response.status = HttpStatus.NOT_FOUND
             response.problem = Problem(404, "Silinməsi istənilən məzmun yoxdur","Not found content")

@@ -147,9 +147,9 @@ class StorageService {
         }
     }
 
-    fun removeFile(fileName:String) {
+    fun removeFile(mediaPath:String, fileName:String) {
         try {
-            Files.deleteIfExists(Paths.get(path!! + fileName))
+            Files.deleteIfExists(Paths.get(path + mediaPath!! + fileName))
         } catch (e: NoSuchFileException){
             throw StorageException("Failed file delete")
         } catch (e: DirectoryNotEmptyException){

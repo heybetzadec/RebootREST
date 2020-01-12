@@ -13,8 +13,9 @@ class Final {
         val urlApp = "http://localhost:8080/"
         val urlREST = "http://localhost:8081/"
 
-        val contentImageMediaPath = "image/"
-        val contentThubnailImageMediaPath = "thubnail/"
+        val contentImageMediaPath = "content/"
+        val contentThubnailImageMediaPath = "content/thubnail/"
+        val slidertImageMediaPath = "slider/"
         val logoImagePath = "logo/"
 
         val jwtSecretKey = "rebootapp"

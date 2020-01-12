@@ -46,11 +46,11 @@ class SliderController(@Autowired private val sliderRepository : SliderRepositor
                 response.status = HttpStatus.OK
                 val content = result.get()
                 if (!file.name.equals(content.imageName)){
-                    storageService.uploadImageSetSize(file, file.originalFilename ?: "img.jpg", Function.sliderDimension(type).width, Function.sliderDimension(type).height)
+                    storageService.uploadImageSetSize(file, Final.slidertImageMediaPath,file.originalFilename ?: "img.jpg", Function.sliderDimension(type).width, Function.sliderDimension(type).height)
                 }
                 try {
                     if (!oldImage.equals(content.imageName)){
-                        storageService.removeFile(oldImage)
+                        storageService.removeFile(Final.slidertImageMediaPath, oldImage)
                     }
                 } catch (e:Exception){
                     println("Failed file delete")
@@ -182,7 +182,7 @@ class SliderController(@Autowired private val sliderRepository : SliderRepositor
                     } catch (e:Exception){
                         println("Remove file error: ${e.message}")
                     }
-                    storageService.removeFile(slider.oldImageName)
+                    storageService.removeFile(Final.slidertImageMediaPath, slider.oldImageName)
                 }
             }
             sliderRepository.save(slider)
@@ -195,7 +195,7 @@ class SliderController(@Autowired private val sliderRepository : SliderRepositor
             response.problem = error
             response.status = HttpStatus.NOT_ACCEPTABLE
             try {
-                storageService.removeFile(slider.imageName)
+                storageService.removeFile(Final.slidertImageMediaPath, slider.imageName)
             } catch (e: StorageException){
                 println("problem remove file: ${e.message}")
             }

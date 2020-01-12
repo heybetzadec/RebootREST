@@ -1,7 +1,6 @@
 package com.app.reboot.controller
 
 import com.app.reboot.config.Final
-import com.app.reboot.entity.Content
 import com.app.reboot.entity.Role
 import com.app.reboot.entity.Tag
 import com.app.reboot.entity.User
@@ -43,7 +42,7 @@ class UserController (
     @RequestMapping(value = ["/user/get/model"], method = [RequestMethod.GET])
     @Throws(Exception::class)
     fun getModel(): User {
-        return User(null, "", "", 18, "", true, "", "", "", true, false, "", null, null, Date(), Date())
+        return User(null, "", "", null, "", true, "", "", "", true, false, "", null, null, Date(), Date())
     }
 
     @RequestMapping(value = ["/user/login"], method = [RequestMethod.GET], produces = [MediaType.APPLICATION_JSON_VALUE])
@@ -162,7 +161,7 @@ class UserController (
         try {
             storageService.uploadLogoSetSize(file, Final.logoWidth, Final.logoHeigh)
             if (oldImage.isNotEmpty()){
-                storageService.removeFile(oldImage)
+                storageService.removeFile(Final.logoImagePath, oldImage)
             }
         } catch (e: StorageException){
             println("Problem upload file: ${e.message}}")
@@ -171,8 +170,9 @@ class UserController (
 
     @RequestMapping(value = ["secure/user/save"], method = [RequestMethod.POST], produces = [MediaType.APPLICATION_JSON_VALUE])
     @Throws(Exception::class)
-    fun addContent(@RequestHeader("Authorisation") authorizationHeader :String, @RequestBody user : User): Response {
+    fun addUser(@RequestHeader("Authorisation") authorizationHeader :String, @RequestBody user : User): Response {
         val response = Response()
+        println("save user = " + user.toString())
         val jwtValidator = JwtValidator();
         val token = authorizationHeader.removePrefix("Token ")
         val jwtUser = jwtValidator.validate(token) ?: JwtUser("", 0, "")
@@ -180,37 +180,40 @@ class UserController (
         val privlage = role.privileges?.find { it.entity == "user" }
         if (privlage != null){
             if (privlage.addable ?: false){
-                val dbUsers = userRepository.findAll();
-                val matchingUser = dbUsers.findLast {
-                    it.username == user.username || it.mail == user.mail
-                }
-
-                if (matchingUser != null){
-                    var error = Problem()
-                    if (user.mail.isEmpty()){
-                        error = Problem(500, "${user.username} istifadəçisi artıq bazada var!","already_have_user_by_username")
-                    } else if (user.username.isEmpty()){
-                        error = Problem(500, "${user.mail} epoçt ünvanı artıq bazada var!","already_have_user_by_mail")
+                val dbUsers = userRepository.findAll()
+                if (user.id == null){
+                    val matchingUser = dbUsers.findLast {
+                        it.username.isNotEmpty() && it.username.isNotEmpty() && (it.username == user.username || it.mail == user.mail)
                     }
-                    response.problem = error
-                    response.status = HttpStatus.NOT_ACCEPTABLE
-                } else {
-                    try {
-                        val body = Body()
-                        if (user.id == null){
-                            user.addUserId = jwtUser.id
-                        } else {
-                            user.editUserId = jwtUser.id
+                    println("matchingUser = " + matchingUser)
+                    if (matchingUser != null){
+                        var error = Problem()
+                        if (user.mail == matchingUser.mail){
+                            error = Problem(500, "${user.mail} epoçt ünvanı artıq bazada var!","already_have_user_by_mail")
+                        } else if (user.username == matchingUser.username){
+                            error = Problem(500, "${user.username} istifadəçisi artıq bazada var!","already_have_user_by_username")
                         }
-                        userRepository.save(user)
-                        body.user = user
-                        response.body = body
-                        response.status = HttpStatus.OK
-                    } catch (e:Exception){
-                        val error = Problem(500,"Saxlanma zamanı problem yarandı!","db_save_problem")
                         response.problem = error
                         response.status = HttpStatus.NOT_ACCEPTABLE
                     }
+                    return response
+                }
+
+                try {
+                    val body = Body()
+                    if (user.id == null){
+                        user.addUserId = jwtUser.id
+                    } else {
+                        user.editUserId = jwtUser.id
+                    }
+                    userRepository.save(user)
+                    body.user = user
+                    response.body = body
+                    response.status = HttpStatus.OK
+                } catch (e:Exception){
+                    val error = Problem(500,"Saxlanma zamanı problem yarandı!","db_save_problem")
+                    response.problem = error
+                    response.status = HttpStatus.NOT_ACCEPTABLE
                 }
             } else {
                 val error = Problem(500,"İcazəniz yoxdur!","No permission!")
@@ -218,6 +221,7 @@ class UserController (
                 response.status = HttpStatus.METHOD_NOT_ALLOWED
             }
         }
+
         return response
     }
 
