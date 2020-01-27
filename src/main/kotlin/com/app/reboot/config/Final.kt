@@ -13,6 +13,7 @@ class Final {
         val urlApp = "http://localhost:8080/"
         val urlREST = "http://localhost:8081/"
 
+        val mediaPath = "media/"
         val contentImageMediaPath = "content/"
         val contentThubnailImageMediaPath = "content/thubnail/"
         val slidertImageMediaPath = "slider/"

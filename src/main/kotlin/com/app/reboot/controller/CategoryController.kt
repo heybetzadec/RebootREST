@@ -148,7 +148,7 @@ class CategoryController (@Autowired private val categoryRepository : CategoryRe
         return response
     }
 
-    @RequestMapping(value = ["/secure/category/remove/id/{id}"], method = [RequestMethod.GET])
+    @RequestMapping(value = ["secure/category/remove/id/{id}"], method = [RequestMethod.GET])
     fun removeCategory(@PathVariable id:Long): Response {
         val response = Response()
         if (categoryRepository.existsById(id)){

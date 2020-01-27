@@ -84,11 +84,15 @@ class StorageService {
             val img = ImageIO.read(`in`)
             var w = width
             var h = height
+
             if (width>height){
-                h = img.height / (img.width / w)
+                if (img.height > height)
+                    h = img.height / (img.width / w)
             } else {
-                w = img.width / (img.height / h)
+                if (img.width > width)
+                    w = img.width / (img.height / h)
             }
+
             val scaledImage = img.getScaledInstance(w, h, Image.SCALE_SMOOTH)
             val imageBuff = BufferedImage(w, h, BufferedImage.TYPE_INT_RGB)
             imageBuff.graphics.drawImage(scaledImage, 0, 0, Color(0, 0, 0), null)
@@ -102,14 +106,12 @@ class StorageService {
         }
     }
 
-
     private fun getFileExtension(name: String): String {
         val lastIndexOf = name.lastIndexOf(".")
         return if (lastIndexOf == -1) {
             "" // empty extension
         } else name.substring(lastIndexOf+1)
     }
-
 
     private fun resizeImageToSmall(fileData: ByteArray, currentSize: Long, maxSize: Long): ByteArray {
         if (currentSize < maxSize) {

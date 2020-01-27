@@ -70,6 +70,8 @@ class UserController (
                 return response
             }
         }
+        thisUser.lastLoginDate = Date()
+        userRepository.save(thisUser)
         thisUser.password = ""
         thisUser.pin = ""
         val jwtUser = JwtUser(data[0], thisUser.id ?: 0, thisUser.userRole?.name ?: "ADMIN")
@@ -118,14 +120,13 @@ class UserController (
     @Throws(Exception::class)
     fun getUsers(): Response{
         val response = Response()
-        val userData = em.createQuery(
+        val usersData = em.createQuery(
                 "select NEW com.app.reboot.response.UserData(id, name, surname,  age, logo, isMan, mail, username, active, note, userRole.name, lastLoginDate, createDate, updateDate) " +
                         "from User u order by id desc", UserData::class.java)
                 .resultList
-        if (userData.size > 0) {
+        if (usersData.size > 0) {
             val body = Body()
-
-            body.userData = userData
+            body.usersData = usersData
             response.body = body
             response.status = HttpStatus.OK
         } else {
@@ -182,7 +183,7 @@ class UserController (
                 val dbUsers = userRepository.findAll()
                 if (user.id == null){
                     val matchingUser = dbUsers.findLast {
-                        it.username.isNotEmpty() && it.username.isNotEmpty() && (it.username == user.username || it.mail == user.mail)
+                        it.mail.isNotEmpty() && it.username.isNotEmpty() && (it.username == user.username || it.mail == user.mail)
                     }
                     if (matchingUser != null){
                         var error = Problem()
@@ -190,11 +191,12 @@ class UserController (
                             error = Problem(500, "${user.mail} epoçt ünvanı artıq bazada var!","already_have_user_by_mail")
                         } else if (user.username == matchingUser.username){
                             error = Problem(500, "${user.username} istifadəçisi artıq bazada var!","already_have_user_by_username")
-                        }
+                        } 
                         response.problem = error
                         response.status = HttpStatus.NOT_ACCEPTABLE
+
+                        return response
                     }
-                    return response
                 }
 
                 try {
@@ -224,5 +226,24 @@ class UserController (
     }
 
 
+    @RequestMapping(value = ["/secure/user/remove/id/{id}"], method = [RequestMethod.GET])
+    fun removeUser(@PathVariable id:Long): Response {
+        val response = Response()
+        if (userRepository.existsById(id)){
+            response.status = HttpStatus.OK
+//            val user = userRepository.findById(id).get()
+//            val userData: UserData = UserData(user.id, user.name, user.surname, user.age, user.logo, user.isMan, user.mail, user.username, user.active, user.note, user.userRole?.name ?: "", user.lastLoginDate, user.createDate, user.updateDate)
+            userRepository.deleteById(id)
+//            val body = Body()
+//            body.userData = userData
+//            response.body = body
+            response.status = HttpStatus.OK
+        } else {
+            response.status = HttpStatus.NOT_FOUND
+            response.problem = Problem(404, "Silinməsi istənilən istifadəçi yoxdur","Not found category")
+            return response
+        }
+        return response
+    }
 
 }

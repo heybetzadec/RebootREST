@@ -38,16 +38,25 @@ class ContentController(@Autowired private val contentRepository : ContentReposi
 
 
     @RequestMapping(value = ["secure/content/upload/img"], method = [RequestMethod.POST], consumes = ["multipart/form-data"])
-    fun upload(@RequestParam file: MultipartFile, @RequestParam oldImage: String) {
+    fun upload(@RequestParam file: MultipartFile, @RequestParam oldImage: String):Response {
+        val response = Response()
         try {
             storageService.uploadImageWithThumbnail(file)
             if (oldImage.isNotEmpty()){
                 storageService.removeFile(Final.contentImageMediaPath, oldImage)
                 storageService.removeFile(Final.contentThubnailImageMediaPath,"th_$oldImage")
             }
+
+            response.status = HttpStatus.OK
         } catch (e: StorageException){
-            println("Problem upload file: ${e.message}}")
+            response.status = HttpStatus.NOT_MODIFIED
+            response.problem = e.message?.let { Problem(400, "Yükləmə zamanı problem yarandı!", it) }
+        } catch (e: Throwable){
+            response.status = HttpStatus.NOT_ACCEPTABLE
+            response.problem = e.message?.let { Problem(400, "Ölçü uyğun deyil", it) }
         }
+
+        return response
     }
 
     @RequestMapping(value = ["secure/content/remove/image/name/{name}"], method = [RequestMethod.GET])
@@ -71,8 +80,13 @@ class ContentController(@Autowired private val contentRepository : ContentReposi
 
     @RequestMapping(value = ["content/get/model"], method = [RequestMethod.GET])
     @Throws(Exception::class)
-    fun getModel(): Content {
-        return Content(null, "", "", "","", "", "","", null, null, true, 0, Date(), Date())
+    fun getModel(): Response {
+        val response = Response()
+        val body = Body()
+        body.contentThubnailImageMediaPath = Final.mediaPath+Final.contentThubnailImageMediaPath
+        body.content = Content(null, "", "", "","", "", "","", null, null, true, 0, Date(), Date())
+        response.body = body
+        return response
     }
 
     @RequestMapping(value = ["content/get/id/{id}"], method = [RequestMethod.GET])
@@ -88,6 +102,7 @@ class ContentController(@Autowired private val contentRepository : ContentReposi
             val content = result.get()
             val body = Body()
             body.content = content
+            body.contentImageMediaPath = Final.mediaPath + Final.contentImageMediaPath
             response.body = body
             response.status = HttpStatus.OK
         }
@@ -134,6 +149,7 @@ class ContentController(@Autowired private val contentRepository : ContentReposi
         if (contents.size > 0) {
             val body = Body()
             body.contents = contents
+            body.contentThubnailImageMediaPath = Final.mediaPath + Final.contentThubnailImageMediaPath
             response.body = body
             response.status = HttpStatus.OK
         } else {
