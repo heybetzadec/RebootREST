@@ -73,8 +73,8 @@ class InitialDataLoader : ApplicationListener<ContextRefreshedEvent> {
 
         val adminRole = roleRepository!!.findByName("ADMIN").get()
         val users = mutableListOf<User>(
-                User("Cavad", "Heybətzadə", "hecaheybet", "heybetzadec@gmail.com", Function.encoder("blackberryz10"), true),
-                User("Toğrul", "İbrahimov", "togrul", "togrul@gmail.com", Function.encoder("12345678"), true))
+                User("Cavad", "Heybətzadə", "hecaheybet", "testmail1@gmail.com", Function.encoder("12345678"), true),
+                User("Toğrul", "İbrahimov", "togrul", "testmail2@gmail.com", Function.encoder("12345678"), true))
         users.forEach {
             try {
                 userRepository!!.findByMail(it.mail).get()
